@@ -1,1 +1,0 @@
-{"edges":[{"source":"Mark_Batson","target":"Cork","id":"1","color":"rgb(229,164,67)"},{"source":"Cork","target":"Mark_Batson","id":"2","color":"rgb(229,67,132)"}],"nodes":[{"id":"Mark_Batson","label":"Mark_Batson","color":"rgb(229,67,164)"},{"id":"Cork","label":"Cork","color":"rgb(229,197,67)"}]}
