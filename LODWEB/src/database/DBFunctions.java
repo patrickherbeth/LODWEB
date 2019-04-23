@@ -469,8 +469,6 @@ public class DBFunctions {
 		// dbFunctions.analyseOnlineEvaluationByUser(IConstants.LDSD_LOD);
 		// System.out.println();
 
-	
-
 		// DBFunctions.loadBrazilianTitles();
 
 		/*
@@ -1576,9 +1574,9 @@ public class DBFunctions {
 
 	public ArrayList<Tag> getNameOfTagsOfFilms(List<Integer> tagsFilmesAvaliados, int limit) {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
-		List<Integer> tagsDosFilmes = DBFunctions.findTagOfDocuments(tagsFilmesAvaliados,limit);
+		List<Integer> tagsDosFilmes = DBFunctions.findTagOfDocuments(tagsFilmesAvaliados, limit);
 		for (int i = 0; i < tagsDosFilmes.size(); i++) {
-			if (tagsDosFilmes.get(i) != null){
+			if (tagsDosFilmes.get(i) != null) {
 				nameOfTagsFilmsHasRating.add(new Tag(i, DBFunctions.getNameOfTag(tagsDosFilmes.get(i))));
 			}
 		}
@@ -1589,7 +1587,7 @@ public class DBFunctions {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
 
 		nameOfTagsFilmsHasRating.add(new Tag(tagsFilmesAvaliado, DBFunctions.getNameOfTag(tagsFilmesAvaliado)));
-	
+
 		return nameOfTagsFilmsHasRating;
 	}
 
@@ -1597,7 +1595,7 @@ public class DBFunctions {
 		ArrayList<Tag> nameOfTagsFilmsHasRating = new ArrayList<Tag>();
 
 		nameOfTagsFilmsHasRating.add(new Tag(DBFunctions.getNameOfTag(idDocument)));
-	
+
 		return nameOfTagsFilmsHasRating;
 	}
 
@@ -1711,7 +1709,8 @@ public class DBFunctions {
 
 	}
 
-	public void insertOrUpdateSemanticRaking(int idTag1, int idTag2, String sim, double score, double sumsemantic,int iduser) {
+	public void insertOrUpdateSemanticRaking(int idTag1, int idTag2, String sim, double score, double sumsemantic,
+			int iduser) {
 		try {
 			Thread.sleep(400);
 		} catch (InterruptedException e) {
@@ -1755,11 +1754,11 @@ public class DBFunctions {
 			}
 		}
 	}
-	
+
 	public double findSemantic(String type, int id_user, int id_filme) {
-		
+
 		double valor = 0;
-		
+
 		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT sumsemantic from `lod`.`semantic_raking` where  `sim`= ? AND `userid`= ? AND `uri2` = ? ";
@@ -1779,9 +1778,9 @@ public class DBFunctions {
 	}
 
 	public static int quantidade(String type, int id_user) {
-		
+
 		int valor = 0;
-		
+
 		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT COUNT(*) from `lod`.`semantic_raking` where `sim`= ? AND `userid`= ?";
@@ -1798,8 +1797,7 @@ public class DBFunctions {
 		}
 		return valor;
 	}
-	
-	
+
 	/*
 	 * Salva o Resultado dos calculos feito do usuário
 	 */
@@ -1808,11 +1806,11 @@ public class DBFunctions {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
-		//String userModel = TaggingFactory.listNameFilmString(userModelList);
+		// String userModel = TaggingFactory.listNameFilmString(userModelList);
 		String testSet = TaggingFactory.listNameFilmString(testSetList);
-		
+
 		try {
-			
+
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e1) {
@@ -1858,19 +1856,19 @@ public class DBFunctions {
 			}
 		}
 	}
-	
-	public double calculeMap(String metric,String type1) {
+
+	public double calculeMap(String metric, String type1) {
 
 		PreparedStatement ps = null;
 		double resultado = 0.0;
 
-		//  String userModel = TaggingFactory.listNameFilmString(userModelList);
+		// String userModel = TaggingFactory.listNameFilmString(userModelList);
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT AVG("+metric+") as oi FROM `lod`.`result` WHERE type = ?";
+			String query = "SELECT AVG(" + metric + ") as oi FROM `lod`.`result` WHERE type = ?";
 			ps = conn.prepareStatement(query);
-			//ps.setString(1, metric);
+			ps.setString(1, metric);
 			ps.setString(1, type1);
 			ResultSet rs = ps.executeQuery();
 			while (rs != null && rs.next()) {
@@ -1883,16 +1881,16 @@ public class DBFunctions {
 
 		return resultado;
 	}
-	
-	
-	public void saveMapPrecison( String type,double map_3, double map_5, double map_10, double p_3, double p_5, double p_10) {
+
+	public void saveMapPrecison(String type, double map_3, double map_5, double map_10, double p_3, double p_5,
+			double p_10) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
-		//String userModel = TaggingFactory.listNameFilmString(userModelList);
-		
+		// String userModel = TaggingFactory.listNameFilmString(userModelList);
+
 		try {
-			
+
 			try {
 				String query = "INSERT INTO `lod`.`map_precision` (`algorithm`, `map_3`,  `map_5`, `map_10`,`p_3`,`p_5`,`p_10`) VALUES (?, ?, ?, ? ,? ,? ,?)";
 				ps = conn.prepareStatement(query);
@@ -1927,7 +1925,6 @@ public class DBFunctions {
 			}
 		}
 	}
-
 
 	public Tag findTag(String name) {
 		Tag tag = null;
@@ -2016,14 +2013,14 @@ public class DBFunctions {
 	}
 
 	public boolean isFilmsExistSemantic(int uri1, int uri2, int userId, String sim) {
-		
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT distinct b.score from `lod`.`semantic_raking` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?))";
@@ -2046,13 +2043,13 @@ public class DBFunctions {
 
 		return false;
 	}
-	
+
 	// retorna a lista simplesmente para calculo de ap
 	public List<Integer> listByAp(int userid, String type) {
 		List<Integer> listforAP = new ArrayList<Integer>();
 
 		try {
-			
+
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -2067,16 +2064,16 @@ public class DBFunctions {
 			ResultSet rs = ps.executeQuery();
 			int cont = 1;
 
-			System.out.println(" \n ---------- Lista de filmes para calculo de ap ordenado por score apenas" + type + "--------------- \n");
+			System.out.println(" \n ---------- Lista de filmes para calculo de ap ordenado por score apenas" + type
+					+ "--------------- \n");
 			System.out.println(" CLASSIFICAÇÃO |  USUARIO |  FILME RECOMENDADO |  TIPO  | SIMILARIDADE ");
 			while (rs != null && rs.next()) {
 
 				listforAP.add(rs.getInt(2));
 				cont = cont + 1;
 
-				System.out.println(
-						"       " + cont + "           " + rs.getInt(6) + "         " + rs.getInt(2)
-								+ "                " + rs.getString(3) + "    " + rs.getDouble(4));
+				System.out.println("       " + cont + "           " + rs.getInt(6) + "         " + rs.getInt(2)
+						+ "                " + rs.getString(3) + "    " + rs.getDouble(4));
 				System.out.println(" ---------------------------------------------------------------------------");
 
 			}
@@ -2093,11 +2090,10 @@ public class DBFunctions {
 		return listforAP;
 	}
 
-	
-public static boolean isRelevant(int idUser, int idFilm) {
-		
+	public static boolean isRelevant(int idUser, int idFilm) {
+
 		List<Cenario> cenarios = new ArrayList<Cenario>();
-		
+
 		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT * FROM cenario1 WHERE id_user = ? AND id_filme = ?";
@@ -2107,26 +2103,25 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				
-				Cenario cenario = new Cenario(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6));
+
+				Cenario cenario = new Cenario(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+						rs.getInt(5), rs.getString(6));
 				cenarios.add(cenario);
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		
 
-						
 		for (Cenario cenario2 : cenarios) {
 			if (cenario2.getRelevance().equals("relevant")) {
 				return true;
 			}
 		}
-	
+
 		return false;
 	}
-	
+
 	public static List<Ratings> createTestSetByMax(int iduser, int limit, int max) {
 
 		List<Ratings> relevants = new ArrayList<Ratings>();
@@ -2156,7 +2151,8 @@ public static boolean isRelevant(int idUser, int idFilm) {
 
 					i++;
 					listRelevants.add(relevants.get(index));
-					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + " Rating: "+ relevants.get(index).getRating());
+					System.out.println(
+							"LIMITE: " + i + " TestSet: " + " ID: " + " Rating: " + relevants.get(index).getRating());
 				}
 			}
 
@@ -2169,7 +2165,7 @@ public static boolean isRelevant(int idUser, int idFilm) {
 	}
 
 	public static List<Ratings> createTestSet(int iduser, int limit, int limit2, int min) {
-		 List<Ratings> testSet = new ArrayList<Ratings>();
+		List<Ratings> testSet = new ArrayList<Ratings>();
 		List<Ratings> irrelevants = new ArrayList<Ratings>();
 		List<Ratings> relevants = new ArrayList<Ratings>();
 		List<Ratings> listIrrelevants = new ArrayList<Ratings>();
@@ -2188,7 +2184,7 @@ public static boolean isRelevant(int idUser, int idFilm) {
 				Ratings rating = new Ratings(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4));
 				if (rs.getDouble(4) >= min) {
 					irrelevants.add(rating);
-				}else{
+				} else {
 					relevants.add(rating);
 				}
 			}
@@ -2201,38 +2197,37 @@ public static boolean isRelevant(int idUser, int idFilm) {
 					System.out.println("Valor de i: " + i + " limit: " + limit);
 					System.out.println("FILME ->  " + irrelevants.get(index).getIddocument());
 					listIrrelevants.add(irrelevants.get(index));
-					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + " Rating: " + irrelevants.get(index).getRating());
+					System.out.println(
+							"LIMITE: " + i + " TestSet: " + " ID: " + " Rating: " + irrelevants.get(index).getRating());
 				}
 			}
-			
+
 			for (int j = 0; j < limit2;) {
-				
+
 				int index = random.nextInt(relevants.size());
 				if (isExistFimlInTag(relevants.get(index).getIddocument())) {
 					j++;
 					System.out.println("Valor de j: " + j + " limit: " + limit2);
 					System.out.println("FILME ->  " + relevants.get(index).getIddocument());
 					listRelevants.add(relevants.get(index));
-					System.out.println("LIMITE: " + j + " TestSet: " + " ID: " + " Rating: "+ relevants.get(index).getRating());
+					System.out.println(
+							"LIMITE: " + j + " TestSet: " + " ID: " + " Rating: " + relevants.get(index).getRating());
 				}
 			}
-
 
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 
+		testSet.addAll(listIrrelevants);
+		testSet.addAll(listRelevants);
 
-		 testSet.addAll(listIrrelevants);
-		 testSet.addAll(listRelevants);
-		 
 		return testSet;
 	}
-	
-	
+
 	public static void inrrelevantesFilmes(int iduser) {
-		
+
 		List<Ratings> irrelevants = new ArrayList<Ratings>();
 		List<Ratings> relevants = new ArrayList<Ratings>();
 		List<Ratings> listIrrelevants = new ArrayList<Ratings>();
@@ -2250,51 +2245,51 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			while (rs != null && rs.next()) {
 				Ratings rating = new Ratings(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4));
 				if (rs.getDouble(4) >= 4) {
-					
+
 					System.out.println("Relevante: " + rs.getDouble(4));
-					
+
 					relevants.add(rating);
-				}else{
+				} else {
 					System.out.println("Irrelevante: " + rs.getDouble(4));
-					
+
 					irrelevants.add(rating);
 				}
 			}
 
 			for (int i = 0; i < irrelevants.size(); i++) {
 
-					System.out.println("FILME ->  " + irrelevants.get(i).getIddocument());
-					//listIrrelevants.add(irrelevants.get(i));
-					System.out.println("Usuario :"+ iduser + " LIMITE: " + i + " TestSet: " + " ID: " + " Rating: " + irrelevants.get(i).getRating());
-					dbfunctions.insertOrUpdateRelevante("irrelevant", iduser, irrelevants.get(i).getIddocument());
-					// aqui vai ter um metodo para inserir na tabela de cenario no campo inrrelevante os id dos filmes inrrelevantes
-				
-			}
-			
-			for (int j = 0; j < relevants.size();j++) {
+				System.out.println("FILME ->  " + irrelevants.get(i).getIddocument());
+				// listIrrelevants.add(irrelevants.get(i));
+				System.out.println("Usuario :" + iduser + " LIMITE: " + i + " TestSet: " + " ID: " + " Rating: "
+						+ irrelevants.get(i).getRating());
+				dbfunctions.insertOrUpdateRelevante("irrelevant", iduser, irrelevants.get(i).getIddocument());
+				// aqui vai ter um metodo para inserir na tabela de cenario no campo
+				// inrrelevante os id dos filmes inrrelevantes
 
-
-					System.out.println("FILME ->  " + relevants.get(j).getIddocument());
-				//	listRelevants.add(relevants.get(j));
-					System.out.println("Usuario :"+ iduser + "LIMITE: " + j + " TestSet: " + " ID: " + " Rating: "+ relevants.get(j).getRating());
-					dbfunctions.insertOrUpdateRelevante("relevant", iduser, relevants.get(j).getIddocument());
-					// aqui vai ter um metodo para inserir na tabela de cenario no campo relevante os id dos filmes relvantes
 			}
 
+			for (int j = 0; j < relevants.size(); j++) {
+
+				System.out.println("FILME ->  " + relevants.get(j).getIddocument());
+				// listRelevants.add(relevants.get(j));
+				System.out.println("Usuario :" + iduser + "LIMITE: " + j + " TestSet: " + " ID: " + " Rating: "
+						+ relevants.get(j).getRating());
+				dbfunctions.insertOrUpdateRelevante("relevant", iduser, relevants.get(j).getIddocument());
+				// aqui vai ter um metodo para inserir na tabela de cenario no campo relevante
+				// os id dos filmes relvantes
+			}
 
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 
-
 		// testSet.addAll(listIrrelevants);
-		 
-		// testSet.addAll(listRelevants);
-		 
-	 //	return testSet;
-	}
 
+		// testSet.addAll(listRelevants);
+
+		// return testSet;
+	}
 
 	/*
 	 * Busca o nome do filme pelo ID
@@ -2323,10 +2318,9 @@ public static boolean isRelevant(int idUser, int idFilm) {
 
 		try {
 			Thread.sleep(200);
-			} catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 		}
 
-		
 		try {
 			Connection conn = DBConnection.getConnection();
 			String query = "SELECT * from `lod`.`tag` where `id`= ? ";
@@ -2423,10 +2417,10 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			for (int i = 0; i < list.size(); i++) {
 
 				if (isExistFimlInTag(list.get(i).getIddocument())) {
-					if (findTagById(list.get(i).getIddocument()) != null){
-					count++;
-					document.add(list.get(i).getIddocument());
-					System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + list.get(i).getRating());
+					if (findTagById(list.get(i).getIddocument()) != null) {
+						count++;
+						document.add(list.get(i).getIddocument());
+						System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + list.get(i).getRating());
 					}
 				} else {
 					System.out.println("Não existe filme em TAGGING");
@@ -2460,7 +2454,8 @@ public static boolean isRelevant(int idUser, int idFilm) {
 				while (rs != null && rs.next()) {
 
 					if (!isTagOfDocument(tags, rs.getInt(4))) {
-						System.out.println("DOCUMENT -> " + userModel.get(i) + " RESULTADO findTagOfDocumentS -> " + rs.getInt(4));
+						System.out.println(
+								"DOCUMENT -> " + userModel.get(i) + " RESULTADO findTagOfDocumentS -> " + rs.getInt(4));
 						tags.add(rs.getInt(4));
 					}
 				}
@@ -2472,7 +2467,6 @@ public static boolean isRelevant(int idUser, int idFilm) {
 		}
 		return tags;
 	}
-
 
 	public static List<Integer> findUsers() {
 
@@ -2533,7 +2527,7 @@ public static boolean isRelevant(int idUser, int idFilm) {
 				ps.setInt(1, filmes.get(i));
 				ps.setInt(2, limit);
 				ResultSet rs = ps.executeQuery();
-								
+
 				while (rs != null && rs.next()) {
 
 					if (!isTagOfDocument(tags, rs.getInt(1))) {
@@ -2545,13 +2539,12 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-	
+
 		}
 		return tags;
 	}
 
-	
-	public void insertOrUpdateCenario( int id_user, String tags_user, String tags_testset, int id_filme) {
+	public void insertOrUpdateCenario(int id_user, String tags_user, String tags_testset, int id_filme) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
@@ -2587,9 +2580,8 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			}
 		}
 	}
-	
-	
-	public void insertOrUpdateCenarioSemTag( int id_user, String tags_user) {
+
+	public void insertOrUpdateCenarioSemTag(int id_user, String tags_user) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
@@ -2623,9 +2615,8 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			}
 		}
 	}
-	
-	
-	public void insertOrUpdateRelevante(  String  relevantornot, int id_user, int id_filme) {
+
+	public void insertOrUpdateRelevante(String relevantornot, int id_user, int id_filme) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
@@ -2660,6 +2651,7 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			}
 		}
 	}
+
 	public List<Integer> findTagOfDocumentWithLimitTag(int filme, int limit) {
 
 		List<Integer> tags = new ArrayList<Integer>();
@@ -2685,7 +2677,7 @@ public static boolean isRelevant(int idUser, int idFilm) {
 
 		return tags;
 	}
-	
+
 	public static List<Cenario> selectCenario(int id_user) {
 		Cenario cenario = null;
 
@@ -2698,9 +2690,9 @@ public static boolean isRelevant(int idUser, int idFilm) {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				cenario = new Cenario(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),rs.getInt(5), rs.getString(6));
+				cenario = new Cenario(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6));
 				list.add(cenario);
-				
+
 			}
 			closeQuery(conn, ps);
 		} catch (SQLException ex) {
@@ -2855,6 +2847,28 @@ public static boolean isRelevant(int idUser, int idFilm) {
 		return tag;
 	}
 
+	
+	public static boolean quantTagsFilms(int idDocument) {
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "SELECT count(*) as quant_tags FROM lod.tagging WHERE iddocument = ?";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setInt(1, idDocument);
+			ResultSet rs = ps.executeQuery();
+			while (rs != null && rs.next()) {
+				
+				if (rs.getInt(1) >= 5) {
+					return true;
+				}
+			}
+			closeQuery(conn, ps);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return hasBefore;
+		
+	}
+	
 	public static boolean isExistFimlInTag(int idDocument) {
 
 		try {

@@ -35,8 +35,8 @@ public class FilterDocumentAndOrder {
 
 		System.out.println("UTILIZANDO FUNÇÃO removeWords() - PATRICK");
 		System.out.println(LuceneCosineSimilarity.getCosineSimilarity(
-				StringUtilsNode.removeInvalidCharacteres(StringUtilsNode.removeWords(a)),
-				StringUtilsNode.removeWords(b)));
+		StringUtilsNode.removeInvalidCharacteres(StringUtilsNode.removeWords(a)),
+		StringUtilsNode.removeWords(b)));
 		System.out.println("------------------------------------------");
 
 	}

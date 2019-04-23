@@ -2,11 +2,14 @@ package cenario;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cc.mallet.util.resources.wn.Synonym;
 import database.DBFunctions;
 import model.Cenario;
 import model.Ratings;
 import model.Tag;
 import tagging.TaggingFactory;
+import wordnet.Sinonyms;
 
 public class CreateCenario {
 
@@ -28,13 +31,21 @@ public class CreateCenario {
 			textouserModel = "";
 			textoTestModel = "";
 			List<Integer> userModel = dbFunctions.createUserModel(listUsers[i], 5);
-
+	
 			ArrayList<Tag> listaTags = dbFunctions.getNameOfTagsOfFilms(userModel, limitTAg);
 			for (Tag tag : listaTags) {
 				if (tag.getName() != null) {
+					
 					textouserModel = textouserModel + tag.getName() + ",";
 				}
+				//for(String tags: Sinonyms.getSinonymous(tag.getName())) {
+				//	textouserModel = textouserModel + tags + ",";
+				//}
 			}
+			
+			
+			
+			
 
 			System.out.println(textouserModel);
 

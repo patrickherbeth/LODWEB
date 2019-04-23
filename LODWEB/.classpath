@@ -18,5 +18,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/BACKUP/LODWEB/biblioteca/jawjaw-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/BACKUP/LODWEB/biblioteca/ws4j-1.0.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

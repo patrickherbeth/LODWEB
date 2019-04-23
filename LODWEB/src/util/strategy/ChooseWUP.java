@@ -3,10 +3,13 @@ package util.strategy;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.mallet.util.resources.wn.Synonym;
 import database.DBFunctions;
 import model.Cenario;
 import model.SemanticRanking;
+import net.didion.jwnl.JWNLException;
 import tagging.TaggingFactory;
+import wordnet.Sinonyms;
 import wordnet.WordNetFactory;
 
 public class ChooseWUP implements Similarity {
@@ -20,6 +23,8 @@ public class ChooseWUP implements Similarity {
 	public void choiceOfSimilarity(List<Cenario> cenarios, Cenario cenario, int userId, int limitTag) {
 
 		DBFunctions dbfunctions = new DBFunctions();
+		
+		
 		String[] arrayUserModel = cenario.getTags_user().split(",");
 		List<SemanticRanking> listSemanticRakingWup = new ArrayList<SemanticRanking>();
 
@@ -27,12 +32,12 @@ public class ChooseWUP implements Similarity {
 			String[] arrayUserTestModel = c.getTags_testset().split(",");
 
 		
+			
 			calculeWUP = WordNetFactory.calculeWUP(TaggingFactory.loadTagArray(arrayUserModel), TaggingFactory.loadTagArray(arrayUserTestModel));
 
 			
 			if (calculeWUP[1] > 0.0) {
-				SemanticRanking semanticRakingWup = new SemanticRanking(1, c.getId_filme(), "WUP", calculeWUP[1],
-						calculeWUP[0], userId);
+				SemanticRanking semanticRakingWup = new SemanticRanking(1, c.getId_filme(), "WUP", calculeWUP[1], calculeWUP[0], userId);
 				listSemanticRakingWup.add(semanticRakingWup);
 			}
 		}
@@ -40,8 +45,7 @@ public class ChooseWUP implements Similarity {
 		for (SemanticRanking semantic : listSemanticRakingWup) {
 
 			if (semantic.getScore() != 0.0 || semantic.getScore() < 1.0) {
-				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(), semantic.getScore(),
-						semantic.getSumsemantic(), userId);
+				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(), semantic.getScore(), semantic.getSumsemantic(), userId);
 			}
 		}
 	}

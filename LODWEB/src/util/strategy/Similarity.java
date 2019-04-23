@@ -3,6 +3,7 @@ package util.strategy;
 import java.util.List;
 
 import model.Cenario;
+import net.didion.jwnl.JWNLException;
 
 public interface Similarity {
 

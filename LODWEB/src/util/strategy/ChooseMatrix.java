@@ -24,6 +24,8 @@ public class ChooseMatrix implements Similarity {
 		List<SemanticRanking> semanticRaking = new ArrayList<SemanticRanking>();
 		List<SemanticRanking> semanticRakingLdsdJaccard = new ArrayList<SemanticRanking>();
 		List<SemanticRanking> semanticRakingWupJaccard = new ArrayList<SemanticRanking>();
+		
+		
 		String[] arrayUserModel = cenario.getTags_user().split(",");
 		
 

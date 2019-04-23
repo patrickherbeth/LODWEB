@@ -192,6 +192,7 @@ public class Sparql {
 		prefix.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>");
 		prefix.append("PREFIX e: <http://learningsparql.com/ns/expenses#>");
 		prefix.append("PREFIX d: <http://learningsparql.com/ns/data#>");
+		prefix.append("PREFIX dct: <http://purl.org/dc/terms/>\n");
 		return prefix.toString();
 
 	}

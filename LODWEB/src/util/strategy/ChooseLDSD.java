@@ -20,6 +20,10 @@ public class ChooseLDSD implements Similarity {
 
 		DBFunctions dbfunctions = new DBFunctions();
 		String[] arrayUserModel = cenario.getTags_user().split(",");
+		
+		System.out.println("tasg user model" + arrayUserModel.toString());
+		
+		
 		List<SemanticRanking> listSemanticRakingLDSD = new ArrayList<SemanticRanking>();
 
 		for (Cenario c : cenarios) {

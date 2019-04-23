@@ -30,6 +30,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
+import org.apache.jena.sparql.core.Prologue;
 import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
 
 
@@ -72,42 +73,58 @@ public class SparqlWalk {
 
 		
 		
+		//System.out.println(getDbPediaTypes("http://dbpedia.org/resource/Finding_Nemo"));
 		
-	  //Lodica.userId = 4;
+		
+		//System.out.println(getDbPediaRDFTypes("http://dbpedia.org/resource/Finding_Nemo"));
+		//getLiteralByUri("http://dbpedia.org/resource/Brazil");
+		
+		String[] testModel = { "Tired", "Angry", "Big", "Pierced"};
+		
+		// Brazil, Big, Dance
+		
+		for (String string : getLiteralByUri("http://dbpedia.org/resource/Boll")) {
+			System.out.println(string);
+		}
+		
+		
+		//Lodica.userId = 4;
 	  
       long init = System.currentTimeMillis();
       
       //System.out.println(countResourcesReachedByIndirectIncomingLinks("http://dbpedia.org/resource/Finding_Nemo"));
       
-      System.out.println(getDirectLinksBetween2Resources("http://dbpedia.org/resource/Finding_Nemo","http://dbpedia.org/resource/Category:American_films"));
+     // System.out.println(getDirectLinksBetween2Resources("http://dbpedia.org/resource/Finding_Nemo","http://dbpedia.org/resource/Category:American_films"));
       
       //System.out.println(countDirectLinksBetween2Resources("http://dbpedia.org/resource/Finding_Nemo","http://dbpedia.org/resource/Category:American_films"));
       
-      //System.out.println(countIndirectOutgoingLinksFromResourceAndLink("http://dbpedia.org/resource/Brazil","http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
-      //NodeUtil.print("time: "+(StringUtilsNode.getDuration(System.currentTimeMillis() - init)));
+     // System.out.println(countIndirectOutgoingLinksFromResourceAndLink("http://dbpedia.org/resource/Brazil","http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+     // NodeUtil.print("time: "+(StringUtilsNode.getDuration(System.currentTimeMillis() - init)));
       
-      //System.out.println(getDirectLinksBetween2Resources("http://dbpedia.org/resource/Batman_Forever","http://dbpedia.org/resource/Category:American_films"));
+     // System.out.println(getDirectLinksBetween2Resources("http://dbpedia.org/resource/Batman_Forever","http://dbpedia.org/resource/Category:American_films"));
  
       //System.out.println(getBrazillianTitle("http://dbpedia.org/resource/True_History"));
-      //System.out.println(getSubjectsByDbPediaTypeAndCountry("Group","Brazil",25));
+      //System.out.println(getSubjectsByDbPediaTypeAndCountry("Group","http://dbpedia.org/resource/Brazil",25));
+      
       
       
 		//System.out.println(getDBpediaSubjectsAndObjectsBothWaysByTypeAndCategory("http://dbpedia.org/resource/Finding_Nemo","http://dbpedia.org/ontology/Person",null));
 		//System.out.println(getDBpediaSubjectsAndObjectsBothWaysByTypeAndCategory("http://dbpedia.org/resource/Finding_Nemo",null,"http://dbpedia.org/resource/Category:American_films"));
       
+      //getDbpediaOntologyDatatypeProperties("http://dbpedia.org/resource/Brazil");
       
-      
-      //System.out.println(getIndirectDistinctInconmingLinksBetween2Resources("http://dbpedia.org/resource/Brazil","http://dbpedia.org/resource/Argentina"));
+     // System.out.println(getIndirectDistinctInconmingLinksBetween2Resources("http://dbpedia.org/resource/Brazil","http://dbpedia.org/resource/Argentina"));
       //System.out.println(getIndirectDistinctOutgoingLinksBetween2Resources("http://dbpedia.org/resource/Brazil","http://dbpedia.org/resource/Argentina"));
       
-      //System.out.println(getIndirectDistinctOutgoingLinksBetween2Resources("http://dbpedia.org/resource/Brazil","http://dbpedia.org/resource/Argentina"));
+     // System.out.println(getIndirectDistinctOutgoingLinksBetween2Resources("http://dbpedia.org/resource/Brazil","http://dbpedia.org/resource/Argentina"));
       
       //System.out.println(getResourceImage("http://dbpedia.org/resource/Brazil"));
      // System.out.println(countIndirectOutgoingLinksFromResourceAndLink("http://dbpedia.org/resource/Brazil","http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
       
       //NodeUtil.print("Time elapse: "+(StringUtilsNode.getDuration(System.currentTimeMillis() - init)));
-		
-	
+      //System.out.println(getMostSpecificSubclasseOfDbpediaResource("http://dbpedia.org/resource/Finding_Nemo"));
+      //System.out.println(getTechProperties("http://dbpedia.org/resource/Brazil"));
+      getCategoryByResource("http://dbpedia.org/resource/Pink_Floyd");
 	}
 	
 	
@@ -375,7 +392,7 @@ public class SparqlWalk {
 	 * @param subjectURI
 	 * @return
 	 */
-	public static List<SimpleTriple> getLiteralByUri(String subjectURI) {
+	public static List<String> getLiteralByUri(String subjectURI) {
 		
 		
 		// tested with
@@ -384,58 +401,85 @@ public class SparqlWalk {
 		List<SimpleTriple> triples = new ArrayList<SimpleTriple>();
 
 		String queryString = "" + Sparql.addService(USING_GRAPH, serviceURI) + 
-				"SELECT distinct ?x ?r2  WHERE {" 
-				
-				+ "{ <"+ subjectURI + ">  ?p1 ?r2 . ?p1 rdfs:label ?x ."
-				+ " FILTER langMatches(lang(?x), " + quotes + "EN"+ quotes + " )  ."
-				+ " FILTER langMatches( lang(?r2), " + quotes + "EN" + quotes+ " ) ."
-				+ " FILTER(isLiteral(?r2)). }" 
-				
-				+ " UNION "
-				
-				+ "{ <" + subjectURI+ ">  ?p1 ?r2 . ?p1 rdfs:label ?x .   "
-				+ " FILTER(isLiteral(?r2)) .  "
-				+ " FILTER langMatches( lang(?x)," + quotes+"EN" + quotes +" ) . "
-				+ " FILTER (isNumeric(?r2)) ."
-				+ " FILTER(?p1 != <http://dbpedia.org/ontology/filename>)."
-				+ " FILTER(?p1 != <http://dbpedia.org/ontology/flag>). "
-				+ " FILTER(?p1 != <http://dbpedia.org/property/imageFlag>)."
-				+ " }"
-				
-				+ Sparql.addFilter(null, "p1", null)
-				// + Sparql.addLangFilter(null, null, "p1")
-				// + Sparql.addLangFilter(null, null, "r2")
-				+ "} " + Sparql.addServiceClosing(USING_GRAPH);
-
-		//NodeUtil.print(queryString);	
+				"SELECT DISTINCT ?r2 WHERE {<"+ subjectURI +"> rdf:type ?r2 }" + Sparql.addServiceClosing(USING_GRAPH);
 
 		Query query = QueryFactory.create(Sparql.addPrefix().concat(queryString));
-
-		//NodeUtil.print(queryString);
 
 		Model m = model;
 		try (QueryExecution qexec = QueryExecutionFactory.create(query, m)) {
 			Map<String, Map<String, List<String>>> serviceParams = new HashMap<String, Map<String, List<String>>>();
 			Map<String, List<String>> params = new HashMap<String, List<String>>();
 			List<String> values = new ArrayList<String>();
-			values.add("20000");
 			params.put("timeout", values);
 			serviceParams.put(serviceURI, params);
 			qexec.getContext().set(ARQ.serviceParams, serviceParams);
 			try {
 				ResultSet rs = qexec.execSelect();
 				for (; rs.hasNext();) {
+					
+					QuerySolution rb = rs.nextSolution();
+					RDFNode r2 = rb.get("r2");
+					System.out.println(r2);
+					values.add(r2.toString());
+					/*
 					QuerySolution rb = rs.nextSolution();
 					RDFNode r2 = rb.get("r2");
 					RDFNode x = rb.get("x");
 					SimpleTriple simpleTriple = new SimpleTriple(subjectURI, x.asLiteral().getLexicalForm(),
 							r2.asLiteral().getLexicalForm());
 					triples.add(simpleTriple);
+					*/
 				}
 			} finally {
 				qexec.close();
 			}
-			return triples;
+			return values;
+		}
+
+	}
+	
+	/**
+	 * @param subjectURI
+	 * @return
+	 */
+	public static List<String> getLiteralSubjectByUri(String subjectURI) {
+		
+		String queryString = "" + Sparql.addService(USING_GRAPH, serviceURI) + 
+				"SELECT ?r2 WHERE {<"+ subjectURI +"> dct:subject ?r2 }" + Sparql.addServiceClosing(USING_GRAPH);
+			
+
+		Query query = QueryFactory.create(Sparql.addPrefix().concat(queryString));
+		       
+		
+		Model m = model;
+		try (QueryExecution qexec = QueryExecutionFactory.create(query, m)) {
+			Map<String, Map<String, List<String>>> serviceParams = new HashMap<String, Map<String, List<String>>>();
+			Map<String, List<String>> params = new HashMap<String, List<String>>();
+			List<String> values = new ArrayList<String>();
+			params.put("timeout", values);
+			serviceParams.put(serviceURI, params);
+			qexec.getContext().set(ARQ.serviceParams, serviceParams);
+			try {
+				ResultSet rs = qexec.execSelect();
+				for (; rs.hasNext();) {
+					
+					QuerySolution rb = rs.nextSolution();
+					RDFNode r2 = rb.get("r2");
+					System.out.println(r2);
+					values.add(r2.toString());
+					/*
+					QuerySolution rb = rs.nextSolution();
+					RDFNode r2 = rb.get("r2");
+					RDFNode x = rb.get("x");
+					SimpleTriple simpleTriple = new SimpleTriple(subjectURI, x.asLiteral().getLexicalForm(),
+							r2.asLiteral().getLexicalForm());
+					triples.add(simpleTriple);
+					*/
+				}
+			} finally {
+				qexec.close();
+			}
+			return values;
 		}
 
 	}
@@ -2517,6 +2561,41 @@ public class SparqlWalk {
 
 	}
 
+	/**
+	 * @param uri1
+	 * @return
+	 */
+	public static List<Resource> getDbPediaRDFTypes(String uri1) {
+
+		List<Resource> resources = new ArrayList<Resource>();
+
+		String queryString = "" + Sparql.addService(USING_GRAPH, serviceURI) + 
+				"SELECT DISTINCT ?class WHERE {<http://dbpedia.org/resource/Brasília> rdf:type ?class}"
+				+ Sparql.addServiceClosing(USING_GRAPH);
+
+		Query query = QueryFactory.create(Sparql.addPrefix().concat(queryString));
+
+		try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+			// createDefaultModel(serviceURI, query, qexec);
+
+			
+			try {
+				ResultSet rs = qexec.execSelect();
+				for (; rs.hasNext();) {
+					QuerySolution rb = rs.nextSolution();
+					RDFNode x = rb.get("class");
+					
+				}
+			} finally {
+				qexec.close();
+			}
+			return resources;
+		}
+
+	}
+
+	
+	
 	public static List<Resource> getResourceDomainByWikidata(String uri1) {
 
 		String uri1Final = getWikidataResourceDomain(uri1).get(0).getURI();
@@ -4258,6 +4337,6 @@ public class SparqlWalk {
 		}
 	}
 		
-	
+
 
 }

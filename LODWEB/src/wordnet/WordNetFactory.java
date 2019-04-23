@@ -11,7 +11,6 @@ import edu.cmu.lti.ws4j.impl.WuPalmer;
 import edu.cmu.lti.ws4j.util.WS4JConfiguration;
 import model.Tag;
 import tagging.TaggingFactory;
-import util.StringUtilsNode;
 
 public class WordNetFactory {
 	private static ILexicalDatabase db = new NictWordNet();
@@ -89,6 +88,7 @@ public class WordNetFactory {
 		if (resultSemantic != resultSemantic) resultSemantic = 0;
 		
 		double score= resultSemantic / mapResultLDSDweighted.size();
+				
 		return new double[] { resultSemantic, score };	
 		
 	}

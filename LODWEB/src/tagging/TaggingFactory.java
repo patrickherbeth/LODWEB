@@ -1,8 +1,6 @@
 package tagging;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -11,6 +9,7 @@ import metric.PrecisionAndRecall;
 import model.Cenario;
 import model.Ratings;
 import model.Tag;
+import net.didion.jwnl.JWNLException;
 import node.Classifier;
 import node.IConstants;
 import node.Lodica;
@@ -19,8 +18,8 @@ import util.strategy.ChooseCosine;
 import util.strategy.ChooseMatrix;
 import util.strategy.ChooseWUP;
 import util.strategy.ChooseLDSD;
-import util.strategy.ChooseWUP;
 import util.strategy.Similarity;
+import wordnet.Sinonyms;
 
 public class TaggingFactory {
 
@@ -56,6 +55,28 @@ public class TaggingFactory {
 		
 		return listTag;
 	}
+	
+	public static List<Tag> loadTagArrayAndSinomyms(String[] tagArray) {
+		List<Tag> listTag = new ArrayList<Tag>();	
+		for (int i = 0; i < tagArray.length; i++) {
+			// System.out.println("TextB " + (i+1) + " = " + tagArray[i] );
+			
+			try {
+				Sinonyms.getSinonymous("tired");
+			} catch (JWNLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			listTag.add(new Tag(tagArray[i]));
+		}
+		
+		
+		return listTag;
+	}
+	
+	
+	
+	
 	
 	public static String retornaString(String[] modelArray) {
 		String palavra = "";
