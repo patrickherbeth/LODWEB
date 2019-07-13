@@ -18,11 +18,12 @@ public class CreateCenario {
 		DBFunctions dbFunctions = new DBFunctions();
 
 		Integer[] listUsers = { 11 };
-
+		//Integer[] listUsers = { 11, 96, 121, 129, 133, 190, 205, 208, 271, 279 };
+		
 		String textouserModel = "";
 		String textoTestModel = "";
-		int limitMin = 30;
-		int limitMax = 20;
+		int limitMin = 20;
+		int limitMax = 0;
 		int limitTAg = 5;
 
 

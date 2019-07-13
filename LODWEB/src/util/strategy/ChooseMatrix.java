@@ -32,7 +32,7 @@ public class ChooseMatrix implements Similarity {
 
 		for (Cenario c : cenarios) {
 			
-			 similarityJaccard =0; calculeSumSemanticLDSD=0; union =0; intersection =0; resultCalculeLDSD =0;resultCalculeWup =0;calculeSumSemanticWup =0;
+			 similarityJaccard = 0; calculeSumSemanticLDSD= 0; union = 0; intersection = 0; resultCalculeLDSD =0;resultCalculeWup =0;calculeSumSemanticWup =0;
 			
 			String[] arrayUserTestModel = c.getTags_testset().split(",");
 			

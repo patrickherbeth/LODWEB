@@ -80,55 +80,56 @@ public class TestSinonyms {
 	
 
 	public static double CountListResultSet(String userModel, String testModel) {
-
+	
 		double count = 0;
-				
+		
 		for (String userSet : SparqlWalk.getLiteralByUri("http://dbpedia.org/resource/" + userModel)) {
 		
 			for (String testSet : SparqlWalk.getLiteralByUri("http://dbpedia.org/resource/" + testModel)) {
 				
 				if (userSet.equals(testSet)) {
-					System.out.println("ENCONTRADO -> User Model: " + userSet + "|" + "Test Model: " + testSet);
+					
+					System.out.println("ENCONTRADO RDF:TYPE -> User Model: " + userSet + "|" + "Test Model: " + testSet + " = " + count);
 					count = count + 1;
-					
-					
 				}
 			}
 		}
 		
+		if(count > 0) {
+			System.out.println("=======================================================================================");
+			System.out.println("Resultado da quantidade de categorias encontradas-> " + count);
+			System.out.println("=======================================================================================");
+		}
 		
 		return count;
+		
+		
+		
 	}
 	
 	
 	public static double CountListResultSetCategorySubject(String userModel, String testModel) {
 
 		double count = 0;
-		
-		double div  = userModel.length() + testModel.length();
 			
 		for (String userSet : SparqlWalk.getLiteralSubjectByUri("http://dbpedia.org/resource/" + userModel)) {
 		
 			for (String testSet : SparqlWalk.getLiteralSubjectByUri("http://dbpedia.org/resource/" + testModel)) {
 				
 				if (userSet.equals(testSet)) {
+					
 					System.out.println("ENCONTRADO DCT:SUBJECT -> User Model: " + userSet + "|" + "Test Model: " + testSet + " = " + count);
 					count = count + 1;
 				}
 			}
 		}
 		
-				
-		System.out.println("=======================================================================================");
-		System.out.println("Resultado da quantidade de categorias encontradas-> " + div);
-		System.out.println("=======================================================================================");
-			
-		count = 0;
+		if(count > 0) {
+			System.out.println("=======================================================================================");
+			System.out.println("Resultado da quantidade de categorias encontradas-> " + count);
+			System.out.println("=======================================================================================");
+		}
 		
-		return (div);
+		return count;
 	}
-	
-	
-	
-	
 }

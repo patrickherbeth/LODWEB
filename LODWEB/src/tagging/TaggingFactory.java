@@ -15,6 +15,7 @@ import node.IConstants;
 import node.Lodica;
 import util.StringUtilsNode;
 import util.strategy.ChooseCosine;
+import util.strategy.ChooseJSPolissemia;
 import util.strategy.ChooseMatrix;
 import util.strategy.ChooseWUP;
 import util.strategy.ChooseLDSD;
@@ -217,6 +218,10 @@ public class TaggingFactory {
 			similarity = new ChooseCosine();
 			similarity.choiceOfSimilarity(cenarios,cenario, userId ,5);
 			break;
+		case "POLISSEMIA":
+			similarity = new ChooseJSPolissemia();
+			similarity.choiceOfSimilarity(cenarios,cenario, userId ,5);
+			break;
 		default:
 			throw new RuntimeException("Strategy not found.");
 		}
@@ -266,30 +271,42 @@ public class TaggingFactory {
 		Lodica.userId = userId;
 
 		for (Cenario cenario : cenarios) {
-			TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "LDSD");
-			TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "WUP");
-			TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "COSINE");
-			TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
-
+			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "LDSD");
+			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "WUP");
+			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "COSINE");
+			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
+			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
+			TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "POLISSEMIA");
+			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "POLISSEMIA|SUBJECT");
+			
+			
+			
 			/*
 			 * Cria lista para calcular AP 
-			 */
-			List<Integer> cosineRankedList = dbFunctions.listByAp(userId, "COSINE");
-			List<Integer> jaccardRankedList = dbFunctions.listByAp(userId, "JACCARD");
-			List<Integer> WUPRankedList = dbFunctions.listByAp(userId, "WUP");
-			List<Integer> jaccardAndWUPRankedList = dbFunctions.listByAp(userId, "WUP+JACCARD");
-			List<Integer> LDSDRankedList = dbFunctions.listByAp(userId, "LDSD");
-			List<Integer> jaccardLDSDRankedList = dbFunctions.listByAp(userId, "LDSD+JACCARD");
+			 // "POLISSEMIA", "POLISSEMIA|SUBJECT", "JACCARD|SINONIMOS", "FORMULA1", "FORMULA2"
+			  * 
+			  * 
+			  */
+			//List<Integer> cosineRankedList = dbFunctions.listByAp(userId, "COSINE");
+			//List<Integer> jaccardRankedList = dbFunctions.listByAp(userId, "JACCARD");
+			//List<Integer> WUPRankedList = dbFunctions.listByAp(userId, "WUP");
+			//List<Integer> jaccardAndWUPRankedList = dbFunctions.listByAp(userId, "WUP+JACCARD");
+			//List<Integer> LDSDRankedList = dbFunctions.listByAp(userId, "LDSD");
+			//List<Integer> jaccardLDSDRankedList = dbFunctions.listByAp(userId, "LDSD+JACCARD");
+			List<Integer> jSPolissemiaRankedList = dbFunctions.listByAp(userId, "POLISSEMIA");
+			List<Integer> jSPolissemiaSubjectRankedList = dbFunctions.listByAp(userId, "POLISSEMIA|SUBJECT");
 
 			/*
 			 * Calcula a Precisição, AP e MAP
 			 */
-			calculeResultPrecisionAndMAP(cenario.getTags_user(), cosineRankedList, listRelevants, userId, "COSINE");
-			calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardRankedList, listRelevants, userId, "JACCARD");
-			calculeResultPrecisionAndMAP(cenario.getTags_user(), WUPRankedList, listRelevants, userId, "WUP");
-			calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardAndWUPRankedList, listRelevants, userId, "WUP+JACCARD");
-			calculeResultPrecisionAndMAP(cenario.getTags_user(), LDSDRankedList, listRelevants, userId, "LDSD");
-			calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardLDSDRankedList, listRelevants, userId, "LDSD+JACCARD");
+			//calculeResultPrecisionAndMAP(cenario.getTags_user(), cosineRankedList, listRelevants, userId, "COSINE");
+			//calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardRankedList, listRelevants, userId, "JACCARD");
+			//calculeResultPrecisionAndMAP(cenario.getTags_user(), WUPRankedList, listRelevants, userId, "WUP");
+			//calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardAndWUPRankedList, listRelevants, userId, "WUP+JACCARD");
+			//calculeResultPrecisionAndMAP(cenario.getTags_user(), LDSDRankedList, listRelevants, userId, "LDSD");
+			//calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardLDSDRankedList, listRelevants, userId, "LDSD+JACCARD");
+			calculeResultPrecisionAndMAP(cenario.getTags_user(), jSPolissemiaRankedList, listRelevants, userId, "POLISSEMIA");
+			calculeResultPrecisionAndMAP(cenario.getTags_user(), jSPolissemiaSubjectRankedList, listRelevants, userId, "POLISSEMIA|SUBJECT");
 
 			break;
 		}
@@ -429,7 +446,7 @@ public class TaggingFactory {
 		
 		DBFunctions dbfunctions = new DBFunctions();
 
-		String[] listAlgorithm= {"LDSD","WUP","COSINE","JACCARD","LDSD+JACCARD","WUP+JACCARD"};
+		String[] listAlgorithm= {"LDSD","WUP","COSINE","JACCARD","LDSD+JACCARD","WUP+JACCARD", "POLISSEMIA", "POLISSEMIA|SUBJECT", "JACCARD|SINONIMOS", "FORMULA1", "FORMULA2"};
 		
 		for (int i = 0; i < listAlgorithm.length; i++) {
 			double map3= dbfunctions.calculeMap("ap3",listAlgorithm[i]);

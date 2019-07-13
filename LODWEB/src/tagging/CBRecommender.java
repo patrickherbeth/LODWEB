@@ -19,6 +19,7 @@ public class CBRecommender {
 
 		init = System.currentTimeMillis();
 
+		//Integer[] listUsers = {  };
 		Integer[] listUsers = { 11 };
 
 		for (int i = 0; i < listUsers.length; i++) {

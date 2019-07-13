@@ -1,5 +1,6 @@
 package tagging;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,8 +23,8 @@ public class TestSinonyms2 {
 
 		// tired feliz bad angry big
 
-		String[] userModel = { "tired", "bad", "angry", "big", "cut", "pierced", "volumed", "big",  "tired", "drained"};
-		String[] testModel = { "tired", "angry", "big", "pierced"};
+		String[] userModel = { "tired", "bad", "angry"};
+		String[] testModel = { "tired", "angry"};
 		
 		double union = Jaccard.union(TaggingFactory.loadTagArray(userModel), TaggingFactory.loadTagArray(testModel));
 		double intersection = Jaccard.intersection(TaggingFactory.loadTagArray(userModel), TaggingFactory.loadTagArray(testModel));
@@ -145,9 +146,9 @@ public class TestSinonyms2 {
 			
 		// Polissemia
 		
-		double totalPolysemy = calculePolysemy(toUpperCaseUserTagSet, toUpperCaseTestTagSet);
+		double totalPolysemy1 = calculePolysemy(toUpperCaseUserTagSet, toUpperCaseTestTagSet);
 		
-		double totalPolysemySubject = calculePolysemyCategorySubject(toUpperCaseUserTagSet, toUpperCaseTestTagSet);
+		double totalPolysemy = calculePolysemyCategorySubject(toUpperCaseUserTagSet, toUpperCaseTestTagSet);
 		
 		// Jaccard após retirar sinônimos iguais e tags iguais 
  				double similarityJaccardSinonimos = CalculeJaccard(newHashSetUserSetWithSinonymys, newHashSetTesSetWithSinonymys);
@@ -159,17 +160,28 @@ public class TestSinonyms2 {
 		
 		System.out.println("VALOR DA POLISSEMIA = "  + totalPolysemy);
 		
-	    System.out.println("VALOR DA POLISSEMIA SUBJECT = "  + totalPolysemySubject);
+		
+		
+		DecimalFormat formato = new DecimalFormat("#.##"); 
+		Double numero = Double.valueOf(formato.format(totalPolysemy));
+		 
+
+		 
+
+		
+		
+		
+	    System.out.println("VALOR DA POLISSEMIA SUBJECT = "  + numero);
 		
 		System.out.println("VALOR DE JACCARD COM SINÔNIMOS = "  + similarityJaccardSinonimos);
 		
 		System.out.println("FORMULA 1: F= (JS + P) / 2 = "  + ((similarityJaccardSinonimos + totalPolysemy) / 2));
 		
-		System.out.println("FORMULA 2: F= (JS + PS) / 2 = "  + ((similarityJaccardSinonimos + totalPolysemySubject) / 2));
+		System.out.println("FORMULA 2: F= (JS + PS) / 2 = "  + ((similarityJaccardSinonimos + totalPolysemy) / 2));
 		
 		System.out.println("FORMULA 3: F= (JS + P + J) / 3 = "  + ((similarityJaccardSinonimos + totalPolysemy + similarityJaccard) / 3));
 		
-		System.out.println("FORMULA 4: F= (JS + PS + J) / 3 = "  + ((similarityJaccardSinonimos + totalPolysemySubject + similarityJaccard) / 3));
+		System.out.println("FORMULA 4: F= (JS + PS + J) / 3 = "  + ((similarityJaccardSinonimos + totalPolysemy + similarityJaccard) / 3));
 		
 	}
 
@@ -388,18 +400,41 @@ public class TestSinonyms2 {
 		for (String user : setUserModel) {
 			for (String test : setTestModel) {
 												
-				if(TestSinonyms.CountListResultSet(user, test)  > 1) {
+				if(TestSinonyms.CountListResultSetCategorySubject(user, test)  > 1) {
 					System.out.println("POLISSEMIA: Encontrado categoria igual: TAG usermodel: "+ user + " TAG testModel: " + test);
 					count = count + 1;
 				}
-				
-				
+		
 			}
 		}
 		System.out.println("VALOR TOTAL DE TODAS AS CATEGORIAS ENCONTRADA: " + " count: " + count + " div: " + div + " resultado: " + (count / div));
 		return (count / div);
 	}
 	
+	
+	public static double calculePolysemyTESTE(Set<String> setUserModel, Set<String> setTestModel) {
+		double count = 0;
+		double div = setUserModel.size() * setTestModel.size();
+				
+		
+		for (String user : setUserModel) {
+			for (String test : setTestModel) {
+												
+				if(TestSinonyms.CountListResultSetCategorySubject(user, test)  > 8) {
+					System.out.println("POLISSEMIA: Encontrado categoria igual: TAG usermodel: "+ user + " TAG testModel: " + test);
+					count = count + 1;
+				}
+			}
+		}
+		
+		
+		
+	 		
+		System.out.println("VALOR TOTAL POLISSEMIA DCT:SUBJECT DE TODAS AS CATEGORIAS ENCONTRADA: " + " count: " + count + " div: " + div + " resultado: " + (count / div));
+		return (count / div);
+		
+		
+	}
 	
 	
 	
@@ -417,10 +452,9 @@ public class TestSinonyms2 {
 					System.out.println("POLISSEMIA: Encontrado categoria igual: TAG usermodel: "+ user + " TAG testModel: " + test);
 					count = count + 1;
 				}
-				
-				
 			}
 		}
+	 		
 		System.out.println("VALOR TOTAL POLISSEMIA DCT:SUBJECT DE TODAS AS CATEGORIAS ENCONTRADA: " + " count: " + count + " div: " + div + " resultado: " + (count / div));
 		return (count / div);
 	}
