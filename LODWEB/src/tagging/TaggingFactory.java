@@ -277,7 +277,7 @@ public class TaggingFactory {
 			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
 			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "JACCARD|JACCARD+LDSD|JACCARD+WUP");
 			TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "POLISSEMIA");
-			//TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "POLISSEMIA|SUBJECT");
+			TaggingFactory.calculeSimilarityBetweenUserModelAndTestSet(cenarios, cenario, userId, "POLISSEMIA|SUBJECT");
 			
 			
 			
@@ -294,7 +294,9 @@ public class TaggingFactory {
 			//List<Integer> LDSDRankedList = dbFunctions.listByAp(userId, "LDSD");
 			//List<Integer> jaccardLDSDRankedList = dbFunctions.listByAp(userId, "LDSD+JACCARD");
 			List<Integer> jSPolissemiaRankedList = dbFunctions.listByAp(userId, "POLISSEMIA");
-			List<Integer> jSPolissemiaSubjectRankedList = dbFunctions.listByAp(userId, "POLISSEMIA|SUBJECT");
+		    List<Integer> jSPolissemiaSubjectRankedList = dbFunctions.listByAp(userId, "POLISSEMIA|SUBJECT");
+		    List<Integer> formula1RankedList = dbFunctions.listByAp(userId, "FORMULA1");
+			List<Integer> formula2RankedList = dbFunctions.listByAp(userId, "FORMULA2");
 
 			/*
 			 * Calcula a Precisição, AP e MAP
@@ -307,7 +309,10 @@ public class TaggingFactory {
 			//calculeResultPrecisionAndMAP(cenario.getTags_user(), jaccardLDSDRankedList, listRelevants, userId, "LDSD+JACCARD");
 			calculeResultPrecisionAndMAP(cenario.getTags_user(), jSPolissemiaRankedList, listRelevants, userId, "POLISSEMIA");
 			calculeResultPrecisionAndMAP(cenario.getTags_user(), jSPolissemiaSubjectRankedList, listRelevants, userId, "POLISSEMIA|SUBJECT");
-
+			calculeResultPrecisionAndMAP(cenario.getTags_user(), formula1RankedList, listRelevants, userId, "FORMULA1");
+			calculeResultPrecisionAndMAP(cenario.getTags_user(), formula2RankedList, listRelevants, userId, "FORMULA2");
+			
+			
 			break;
 		}
 

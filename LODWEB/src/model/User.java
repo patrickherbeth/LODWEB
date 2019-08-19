@@ -2,6 +2,12 @@ package model;
 
 public class User {
 	
+	private int userid;
+	private String first;
+	private String second;
+	private String email;
+	private String password;
+	
 	public User(int userid, String first, String second, String email, String password) {
 		super();
 		this.userid = userid;
@@ -49,12 +55,4 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	private int userid;
-	private String first;
-	private String second;
-	private String email;
-	private String password;
-
-
 }

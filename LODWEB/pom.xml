@@ -11,7 +11,16 @@
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/de.sciss/ws4j -->
 
-
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.7</version>
+		</dependency>
+		<dependency>
+		    <groupId>info.debatty</groupId>
+		    <artifactId>java-string-similarity</artifactId>
+		    <version>RELEASE</version>
+		</dependency>
 		<dependency>
 			<groupId>fm.last</groupId>
 			<artifactId>coverartarchive-api</artifactId>

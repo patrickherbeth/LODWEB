@@ -2174,31 +2174,47 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT id, iduser, iddocument, AVG(rating) FROM rating WHERE iduser != ? and iddocument not in (SELECT iddocument FROM rating where iduser = ?) GROUP BY iddocument";
+			// String query = "SELECT id, iduser, iddocument, AVG(rating) FROM rating WHERE
+			// iduser != ? and iddocument not in (SELECT iddocument FROM rating where iduser
+			// = ?) GROUP BY iddocument";
+
+			String query = "SELECT t1.iduser, t1.iddocument, d1.rating FROM tagging as t1 "
+					+ "	   JOIN rating as d1 on t1.iddocument = d1.iddocument and t1.iduser = d1.iduser "
+					+ "      where t1.idUser != ? and t1.idtag in (SELECT distinct(t2.idtag) FROM tagging as t2 "
+					+ "   																			           JOIN rating as d2 on t2.iddocument = d2.iddocument and t2.iduser = d2.iduser "
+					+ "																							  where t2.idUser = ? and d2.rating = 5)";
+
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, iduser);
 			ps.setInt(2, iduser);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				Ratings rating = new Ratings(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4));
-				if (rs.getDouble(4) >= min) {
+				System.out.println("RS1 " + rs.getInt(1));
+				System.out.println("RS2 " + rs.getInt(2));
+				System.out.println("RS3 " + rs.getInt(3));
+				// System.out.println("RS4 " + rs.getInt(4));
+
+				Ratings rating = new Ratings(rs.getInt(1), rs.getInt(2), (double) rs.getInt(3));
+
+				if (rating.getRating() < 4) {
 					irrelevants.add(rating);
 				} else {
 					relevants.add(rating);
 				}
 			}
 
-			for (int i = 0; i < limit;) {
-
-				int index = random.nextInt(irrelevants.size());
-				if (isExistFimlInTag(irrelevants.get(index).getIddocument())) {
-					i++;
-					System.out.println("Valor de i: " + i + " limit: " + limit);
-					System.out.println("FILME ->  " + irrelevants.get(index).getIddocument());
-					listIrrelevants.add(irrelevants.get(index));
-					System.out.println(
-							"LIMITE: " + i + " TestSet: " + " ID: " + " Rating: " + irrelevants.get(index).getRating());
+			if (!irrelevants.isEmpty()) {
+				for (int i = 0; i < limit;) {
+					int index = random.nextInt(irrelevants.size());
+					if (isExistFimlInTag(irrelevants.get(index).getIddocument())) {
+						i++;
+						System.out.println("Valor de i: " + i + " limit: " + limit);
+						System.out.println("FILME ->  " + irrelevants.get(index).getIddocument());
+						listIrrelevants.add(irrelevants.get(index));
+						System.out.println("LIMITE: " + i + " TestSet: " + " ID: " + " Rating: "
+								+ irrelevants.get(index).getRating());
+					}
 				}
 			}
 
@@ -2236,21 +2252,25 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT id, iduser, iddocument, AVG(rating) FROM rating WHERE iduser != ? and iddocument  in (SELECT id_filme FROM cenario1 where id_user = ?) GROUP BY iddocument";
+			String query = "SELECT t1.iduser, t1.iddocument, d1.rating FROM tagging as t1 "
+					+ "	   JOIN rating as d1 on t1.iddocument = d1.iddocument and t1.iduser = d1.iduser "
+					+ "      where t1.idUser != ? and t1.idtag in (SELECT distinct(t2.idtag) FROM tagging as t2 "
+					+ "   																			           JOIN rating as d2 on t2.iddocument = d2.iddocument and t2.iduser = d2.iduser "
+					+ "																							  where t2.idUser = ? and d2.rating = 5)";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, iduser);
 			ps.setInt(2, iduser);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				Ratings rating = new Ratings(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDouble(4));
-				if (rs.getDouble(4) >= 4) {
+				Ratings rating = new Ratings(rs.getInt(1), rs.getInt(2), (double)rs.getInt(3));
+				if (rating.getRating() >= 4) {
 
-					System.out.println("Relevante: " + rs.getDouble(4));
+					// System.out.println("Relevante: " + rs.getDouble(4));
 
 					relevants.add(rating);
 				} else {
-					System.out.println("Irrelevante: " + rs.getDouble(4));
+					//System.out.println("Irrelevante: " + rs.getDouble(4));
 
 					irrelevants.add(rating);
 				}
@@ -2690,7 +2710,8 @@ public class DBFunctions {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
-				cenario = new Cenario(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6));
+				cenario = new Cenario(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5),
+						rs.getString(6));
 				list.add(cenario);
 
 			}
@@ -2847,7 +2868,6 @@ public class DBFunctions {
 		return tag;
 	}
 
-	
 	public static boolean quantTagsFilms(int idDocument) {
 		try {
 			Connection conn = DBConnection.getConnection();
@@ -2856,7 +2876,7 @@ public class DBFunctions {
 			ps.setInt(1, idDocument);
 			ResultSet rs = ps.executeQuery();
 			while (rs != null && rs.next()) {
-				
+
 				if (rs.getInt(1) >= 5) {
 					return true;
 				}
@@ -2866,9 +2886,9 @@ public class DBFunctions {
 			ex.printStackTrace();
 		}
 		return hasBefore;
-		
+
 	}
-	
+
 	public static boolean isExistFimlInTag(int idDocument) {
 
 		try {

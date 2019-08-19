@@ -46,7 +46,7 @@ public class Sinonyms {
 		
 		
 		if (a != null) {
-			System.out.println("Não encontrou Sinônimos.");
+			// System.out.println("Não encontrou Sinônimos.");
 							
 			for (int i = 0; i < a.size(); i++) {
 				Synset s = (Synset) a.get(i);

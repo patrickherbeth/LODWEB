@@ -419,7 +419,7 @@ public class SparqlWalk {
 					
 					QuerySolution rb = rs.nextSolution();
 					RDFNode r2 = rb.get("r2");
-					System.out.println(r2);
+					//System.out.println(r2);
 					values.add(r2.toString());
 					/*
 					QuerySolution rb = rs.nextSolution();
@@ -465,7 +465,7 @@ public class SparqlWalk {
 					
 					QuerySolution rb = rs.nextSolution();
 					RDFNode r2 = rb.get("r2");
-					System.out.println(r2);
+					//System.out.println(r2);
 					values.add(r2.toString());
 					/*
 					QuerySolution rb = rs.nextSolution();

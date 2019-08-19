@@ -1,8 +1,6 @@
 package tagging;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import net.didion.jwnl.JWNLException;
 import node.SparqlWalk;
 import wordnet.Sinonyms;
@@ -66,7 +64,7 @@ public class TestSinonyms {
 		for (String user : listUserModel) {
 			for (String test : listTestModel) {
 				if (user.equals(test)) {
-					System.out.println("Encontrado categoria igual");
+		//			System.out.println("Encontrado categoria igual");
 					count = count + 1;
 					result = CountListResultSet(user, test) + result;
 				}
@@ -83,13 +81,15 @@ public class TestSinonyms {
 	
 		double count = 0;
 		
+		userModel = testModel = "Star";
+		
 		for (String userSet : SparqlWalk.getLiteralByUri("http://dbpedia.org/resource/" + userModel)) {
 		
 			for (String testSet : SparqlWalk.getLiteralByUri("http://dbpedia.org/resource/" + testModel)) {
 				
 				if (userSet.equals(testSet)) {
 					
-					System.out.println("ENCONTRADO RDF:TYPE -> User Model: " + userSet + "|" + "Test Model: " + testSet + " = " + count);
+					//System.out.println("ENCONTRADO RDF:TYPE -> User Model: " + userSet + "|" + "Test Model: " + testSet + " = " + count);
 					count = count + 1;
 				}
 			}
@@ -102,9 +102,7 @@ public class TestSinonyms {
 		}
 		
 		return count;
-		
-		
-		
+
 	}
 	
 	
@@ -118,7 +116,7 @@ public class TestSinonyms {
 				
 				if (userSet.equals(testSet)) {
 					
-					System.out.println("ENCONTRADO DCT:SUBJECT -> User Model: " + userSet + "|" + "Test Model: " + testSet + " = " + count);
+				//	System.out.println("ENCONTRADO DCT:SUBJECT -> User Model: " + userSet + "|" + "Test Model: " + testSet + " = " + count);
 					count = count + 1;
 				}
 			}

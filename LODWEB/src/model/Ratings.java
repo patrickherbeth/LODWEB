@@ -15,6 +15,12 @@ public class Ratings {
 		this.rating = rating;
 
 	}
+	
+	public Ratings( int iduser, int iddocument, double rating) {
+		this.iduser = iduser;
+		this.iddocument = iddocument;
+		this.rating = rating;
+	}
 
 	public int getId() {
 		return id;

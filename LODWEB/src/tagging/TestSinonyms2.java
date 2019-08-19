@@ -86,13 +86,13 @@ public class TestSinonyms2 {
 			System.out.println("==================");
 
 			for (String c : Sinonyms.getSinonymous(newHashSetUserSetWithSinonymys[i1])) {
-				 System.out.println("Sinonimôs -> " + c);
+				// System.out.println("Sinonimôs -> " + c);
 				 cont++;
 
 				for (int j1 = 0; j1 < newHashSetTesSetWithSinonymys.length; j1++) {
 					
 					if (c.equals(newHashSetTesSetWithSinonymys[j1])) {
-						System.out.println("Encontrou sinônimos -> | " + c + " |" + newHashSetTesSetWithSinonymys[j1]);
+						//System.out.println("Encontrou sinônimos -> | " + c + " |" + newHashSetTesSetWithSinonymys[j1]);
 						newHashSetTesSetWithSinonymys[j1] = newHashSetUserSetWithSinonymys[i1];
 					}
 				}
@@ -262,15 +262,16 @@ public class TestSinonyms2 {
 	public static void RemoveSinonimysvetorOfVetorSetTestModel(Set<String> vetorSetTestModel,
 			ArrayList<String> testModelWithSinonimys) throws JWNLException {
 		for(String d: vetorSetTestModel) {
+			/*
 			System.out.println("----------------------------");
 			System.out.println("Palavra do Vetor -> " + d);
 			System.out.println("----------------------------");
-			
+			*/
 			for (String string : Sinonyms.getSinonymous(d)) {
 				for(String dd: vetorSetTestModel) {
 								
 					if (dd.equals(string)) {
-						System.out.println("Encontrou TestModel sinônimos -> " + dd + " e " + string);
+						//System.out.println("Encontrou TestModel sinônimos -> " + dd + " e " + string);
 						
 						testModelWithSinonimys.remove(string);
 					} 

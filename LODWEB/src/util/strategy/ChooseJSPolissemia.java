@@ -13,6 +13,8 @@ import database.DBFunctions;
 import model.Cenario;
 import model.SemanticRanking;
 import net.didion.jwnl.JWNLException;
+import node.Classifier;
+import node.IConstants;
 import similarity.Jaccard;
 import tagging.TaggingFactory;
 import tagging.TestSinonyms;
@@ -50,8 +52,7 @@ public class ChooseJSPolissemia implements Similarity {
 			similarityJaccard = CalculeJaccard(arrayUserModel, arrayUserTestModel);
 
 			System.out.println("TESTE resultado similaridade JACCARD com Sinônimos: " + similarityJaccard);
-			System.out.println(
-					"============================================================================================");
+			System.out.println("============================================================================================");
 
 			// HashSet para retirar palavras repetidas
 			Set<String> vetorSetUserModel = new HashSet<String>();
@@ -60,8 +61,7 @@ public class ChooseJSPolissemia implements Similarity {
 			ArrayList<String> userModelWithSinonimys = new ArrayList<String>();
 			ArrayList<String> testModelWithSinonimys = new ArrayList<String>();
 
-			System.out.println(
-					"======================= O vetor auxiliar que será removido as Tags com sinônimos =====================================================================");
+			System.out.println("======================= O vetor auxiliar que será removido as Tags com sinônimos =====================================================================");
 
 			userModelWithSinonimys = createArrayListWithSinonys(arrayUserModel);
 			testModelWithSinonimys = createArrayListWithSinonys(arrayUserTestModel);
@@ -69,8 +69,7 @@ public class ChooseJSPolissemia implements Similarity {
 			System.out.println("vetor userModelWithSinonimys ANTES de retirar sinônimos: " + userModelWithSinonimys);
 			System.out.println("vetor testModelWithSinonimys ANTES de retirar sinônimos: " + testModelWithSinonimys);
 
-			System.out.println(
-					"===================================Retira as Tags iguais do tagset UserModel ===================================");
+			System.out.println("================================================================================================================================================================");
 
 			ArrayList<String> arrayTestModelWithSinonimys = new ArrayList<String>();
 
@@ -78,8 +77,7 @@ public class ChooseJSPolissemia implements Similarity {
 				arrayTestModelWithSinonimys.add(tag);
 			}
 
-			System.out.println(
-					"===================================Retira as Tags iguais do tagset TestModel ===================================");
+			System.out.println("===================================Retira as Tags iguais do tagset TestModel ===================================");
 
 			try {
 
@@ -90,11 +88,9 @@ public class ChooseJSPolissemia implements Similarity {
 			}
 
 			System.out.println("vetor userModelWithSinonimys DEPOIS de retirar sinônimos: " + userModelWithSinonimys);
-			System.out.println(
-					"vetor testModelWithSinonimys DEPOIS de retirar sinônimos: " + arrayTestModelWithSinonimys);
+			System.out.println("vetor testModelWithSinonimys DEPOIS de retirar sinônimos: " + arrayTestModelWithSinonimys);
 
-			System.out.println(
-					"===================================Retira as Tags iguais do TestSet ===================================");
+			System.out.println("===================================Retira as Tags iguais do TestSet ===================================");
 
 			String[] newHashSetUserSetWithSinonymys = createHashSetUserWithSinonymys(userModelWithSinonimys);
 
@@ -102,8 +98,7 @@ public class ChooseJSPolissemia implements Similarity {
 
 			printTagSetWithoutSinonyms(newHashSetUserSetWithSinonymys);
 
-			System.out.println(
-					"=========================================================================================");
+			System.out.println("=========================================================================================");
 
 			printTagSetWithoutSinonyms(newHashSetTesSetWithSinonymys);
 
@@ -119,7 +114,7 @@ public class ChooseJSPolissemia implements Similarity {
 				try {
 
 					for (String d : Sinonyms.getSinonymous(newHashSetUserSetWithSinonymys[i1])) {
-						System.out.println("Sinonimôs -> " + d);
+						//System.out.println("Sinonimôs -> " + d);
 						cont++;
 
 						for (int j1 = 0; j1 < newHashSetTesSetWithSinonymys.length; j1++) {
@@ -137,7 +132,7 @@ public class ChooseJSPolissemia implements Similarity {
 					e.printStackTrace();
 				}
 
-				System.out.println("Total -> " + cont);
+				//System.out.println("Total -> " + cont);
 				cont = 0;
 			}
 
@@ -150,7 +145,7 @@ public class ChooseJSPolissemia implements Similarity {
 			for (String a : newHashSetTesSetWithSinonymys) {
 				setTestModel.add(a);
 			}
-
+/*
 			System.out.println("User Model -> " + setUserModel);
 			System.out.println("Test Model -> " + setTestModel);
 			System.out.println("------------------- PRINT ARRAY arraySetUserModel ---------------------");
@@ -158,7 +153,7 @@ public class ChooseJSPolissemia implements Similarity {
 			System.out.println("-------------------- PRINT ARRAY arraySetUserModel ----------------------");
 			printArray(newHashSetTesSetWithSinonymys);
 			System.out.println("----------------------------------------");
-
+*/
 			//
 			Set<String> toUpperCaseUserTagSet = new HashSet<String>();
 
@@ -209,7 +204,7 @@ public class ChooseJSPolissemia implements Similarity {
 		
 
 			if (calculePolissemia[1] > 0.0) {
-				SemanticRanking semanticRakingTotalPolysemy = new SemanticRanking(1, c.getId_filme(), "POLISSEMIA", calculePolissemia[0], calculePolissemia[1], userId);
+				SemanticRanking semanticRakingTotalPolysemy = new SemanticRanking(1, c.getId_filme(), "POLISSEMIA", calculePolissemia[1], calculePolissemia[0], userId);
 				semanticRakingPolissemia.add(semanticRakingTotalPolysemy);
 			}
 			
@@ -218,7 +213,7 @@ public class ChooseJSPolissemia implements Similarity {
 			
 
 			if (valueCalculePolissemiaSubject[1] > 0.0) {
-				SemanticRanking similarityRakingPolissemiaSubject = new SemanticRanking(1, c.getId_filme(), "POLISSEMIA|SUBJECT", valueCalculePolissemiaSubject[0], valueCalculePolissemiaSubject[1], userId);
+				SemanticRanking similarityRakingPolissemiaSubject = new SemanticRanking(1, c.getId_filme(), "POLISSEMIA|SUBJECT", valueCalculePolissemiaSubject[1], valueCalculePolissemiaSubject[0], userId);
 				semanticRakingPolissemiaSubject.add(similarityRakingPolissemiaSubject);
 			}
 
@@ -432,17 +427,21 @@ public class ChooseJSPolissemia implements Similarity {
 		double div = setUserModel.size() * setTestModel.size();
 		
 		
-		System.out.println("VALOR DA SOMA DE USER MODEL + TEST MODEL -> " + div);
+		// System.out.println("VALOR DA SOMA DE USER MODEL + TEST MODEL -> " + div);
 
 		for (String user : setUserModel) {
 			for (String test : setTestModel) {
 
-				if (TestSinonyms.CountListResultSet(StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(user), StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(test)) > 1) {
-					System.out.println("POLISSEMIA: Encontrado categoria igual: TAG usermodel: " + user + " TAG testModel: " + test);
-					count = count + 1;
-					mapResultPolisemyWeighted.put(user + test, (count / div));
+				try {
+					if (TestSinonyms.CountListResultSet(StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(user), StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(test)) > 1) {
+						
+					    System.out.println("POLISSEMIA: Encontrado categoria igual: TAG usermodel: " + user + " TAG testModel: " + test);
+						count = count + 1;
+						mapResultPolisemyWeighted.put(user + test, (count / div));
+					}
+				} catch (Exception e) {
+					calculePolysemy(setUserModel, setTestModel);
 				}
-
 			}
 		}
 		
@@ -457,7 +456,7 @@ public class ChooseJSPolissemia implements Similarity {
 		
 		double score= (count / div);
 		
-		System.out.println("VALOR TOTAL DE TODAS AS CATEGORIAS ENCONTRADA: " + " count: " + count + " div: " + div + " resultado: " + (count / div));
+		 System.out.println("VALOR TOTAL DE TODAS AS CATEGORIAS ENCONTRADA: " + " count: " + count + " div: " + div + " resultado: " + (count / div));
 		
 		return new double[] { resultSemantic, score };	
 	}
@@ -470,11 +469,14 @@ public class ChooseJSPolissemia implements Similarity {
 
 		for (String user : setUserModel) {
 			for (String test : setTestModel) {
-
-				if (TestSinonyms.CountListResultSetCategorySubject(StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(user), StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(test)) > 1) {
-					System.out.println("POLISSEMIA SUBJECT: Encontrado categoria igual: TAG usermodel: " + user + " TAG testModel: " + test);
-					count = count + 1;
-					mapResultPolisemyWeighted.put(user + test, (count / div));
+				try {
+					if (TestSinonyms.CountListResultSetCategorySubject(StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(user), StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(test)) > 1) {
+						System.out.println("POLISSEMIA SUBJECT: Encontrado categoria igual: TAG usermodel: " + user + " TAG testModel: " + test);
+						count = count + 1;
+						mapResultPolisemyWeighted.put(user + test, (count / div));
+					}
+				} catch (Exception e) {
+					calculePolysemySubject(setUserModel, setTestModel);
 				}
 			}
 		}
@@ -484,13 +486,13 @@ public class ChooseJSPolissemia implements Similarity {
 		System.out.println(mapResultPolisemyWeighted + " \n");
 		System.out.println("\n ================================== RESULTADOS ====================================== ");
 		
-		// Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista
+		 //Resultado da soma de todos as tags que existe similardade dividida pela quantidade de itens da lista
 		resultSemantic = TaggingFactory.sumSemantic(mapResultPolisemyWeighted);
 		
 		double score= (count / div);
 		
 		
-		System.out.println("VALOR TOTAL DE TODAS AS CATEGORIAS ENCONTRADA: " + " count: " + count + " div: " + div + " resultado: " + (count / div));
+		 System.out.println("VALOR TOTAL DE TODAS AS CATEGORIAS ENCONTRADA: " + " count: " + count + " div: " + div + " resultado: " + (count / div));
 		
 		return new double[] { resultSemantic, score };	
 		
@@ -542,14 +544,14 @@ public class ChooseJSPolissemia implements Similarity {
 		ArrayList<String> tagSetlWithSinonimys = new ArrayList<String>();
 
 		for (String c : vetorTagSetModel) {
-			System.out.println("----------------------------");
-			System.out.println("Palavra do Vetor -> " + c);
-			System.out.println("----------------------------");
+			 System.out.println("----------------------------");
+			 System.out.println("Palavra do Vetor -> " + c);
+			 System.out.println("----------------------------");
 
 			for (String string : Sinonyms.getSinonymous(c)) {
 				for (String cc : vetorTagSetModel) {
 					if (cc.equals(string)) {
-						System.out.println("EncontroUserModel u sinônimos -> " + cc + " e " + string);
+						 System.out.println("EncontroUserModel u sinônimos -> " + cc + " e " + string);
 
 						tagSetlWithSinonimys.remove(string);
 

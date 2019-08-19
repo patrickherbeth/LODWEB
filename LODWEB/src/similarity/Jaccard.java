@@ -23,18 +23,20 @@ public class Jaccard {
 			B.add(termo2.getName());
 		}
 
-		A.addAll(B); // União
+		A.addAll(B); 
+		
+		// União
 		
 		Iterator<String> itr = A.iterator();
 
-		System.out.println("----- UNION ------");
+		 System.out.println("----- UNION ------");
 		while (itr.hasNext()) {
 			System.out.println(itr.next());
 			cont++;
 
 		}
-		System.out.println("Quantidade -> " + cont);
-		System.out.println("------------------");
+		 System.out.println("Quantidade -> " + cont);
+		 System.out.println("------------------");
 
 		return cont;
 	}
@@ -108,8 +110,8 @@ public class Jaccard {
 		
 		double result = (intersection / union);
 		
-		System.out.println("Result Similarity JACCARD de A e B: " + result);
-		System.out.println("---------------------------------------------------------");
+	//	System.out.println("Result Similarity JACCARD de A e B: " + result);
+	//	System.out.println("---------------------------------------------------------");
 		
 		return result;
 
