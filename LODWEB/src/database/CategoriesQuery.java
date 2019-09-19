@@ -3,7 +3,9 @@ package database;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import model.Tag;
@@ -55,25 +57,49 @@ public class CategoriesQuery {
 		return false;
 	}
 
-	public void addNewCategory(String categoryName) {
+	public List<Category> getAll(){
+		try {
+			Statement ps = conn.createStatement();
+			String query = "SELECT c.id, c.name FROM category c;";
+
+			ResultSet rs = ps.executeQuery(query);
+
+			List<Category> categories = new ArrayList<>();
+			
+			while (rs.next()) {
+				int id = rs.getInt(1);
+				String name = rs.getString(2);
+
+				categories.add(new Category(id, name));
+			}
+			
+			return categories;
+
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	public void addNewCategories(String categories) {
 		try {
 			Statement ps = conn.createStatement();
 
-			String query = "INSERT INTO category (name) VALUES ('" + categoryName + "')";
+			String query = "INSERT INTO movielens.category (name) VALUES " + categories;
 
 			ps.executeUpdate(query);
 		} catch (Exception ex) {
 		}
 	}
 
-	public void addNewCategoryTag(int idTag, int idCategory) {
+	public void addNewCategoryTag(String values) {
 		try {
 			Statement ps = conn.createStatement();
 
-			String query = "INSERT INTO category_tag (id_tag, id_category) VALUES (" + idTag + "," + idCategory + ")";
+			String query = "INSERT INTO movielens.category_tag (id_tag, id_category) VALUES " + values;
 
 			ps.executeUpdate(query);
 		} catch (Exception ex) {
+			System.out.println();
 		}
 	}
 

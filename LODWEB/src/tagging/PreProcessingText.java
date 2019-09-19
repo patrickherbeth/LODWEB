@@ -7,8 +7,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.text.StringTokenizer;
-
 import database.CategoriesQuery;
 import database.TagsQuery;
 import database.repository.DocumentsQuery;
@@ -19,7 +17,6 @@ import model.Tag;
 import movietagging.Category;
 import movietagging.UserMovie;
 import net.didion.jwnl.JWNLException;
-import stopwords.StopWord;
 import wordnet.Sinonyms;
 
 public class PreProcessingText {
@@ -48,7 +45,17 @@ public class PreProcessingText {
 		this.userModel = new HashSet<>();
 	}
 
-	public PreProcessingText start() {
+	public PreProcessingText startF1() {
+		selectCandidateMovies();
+		createUserModel(LIMIT_OF_TAGS);
+		createTestSet();
+		treatmentPolysemy();
+		calculationJaccard();
+
+		return this;
+	}
+	
+	public PreProcessingText startF2() {
 		selectCandidateMovies();
 		createUserModel(LIMIT_OF_TAGS);
 		
@@ -200,28 +207,6 @@ public class PreProcessingText {
 
 	public UserMovie getUserMovie() {
 		return userMovie;
-	}
-
-	private void removeStopWords() {
-		StopWord stopWord = new StopWord();
-
-		for (Tag tag : this.userModel) {
-			StringTokenizer stringToken = new StringTokenizer(tag.getName());
-
-			List<String> textTokenizer = stringToken.getTokenList();
-
-			tag.setName(stopWord.removeFromText(textTokenizer).toList());
-		}
-
-		for (Document movie : moviesUnViewed) {
-			for (Tag tag : movie.getTags()) {
-				StringTokenizer stringToken = new StringTokenizer(tag.getName());
-
-				List<String> textTokenizer = stringToken.getTokenList();
-
-				tag.setName(stopWord.removeFromText(textTokenizer).toList());
-			}
-		}
 	}
 }
 

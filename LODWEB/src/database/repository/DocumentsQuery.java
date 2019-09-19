@@ -21,8 +21,9 @@ public class DocumentsQuery {
 		ArrayList<Document> movies = new ArrayList<>();
 
 		try {
-			String query = "SELECT doc.id, doc.desc, rat.rating FROM document as doc "
-					+ "JOIN rating as rat on doc.id = rat.iddocument WHERE rat.iduser = ? and rat.rating >= ?";
+			String query = "SELECT m.id, m.title, rat.rating FROM movie as m " + 
+					"JOIN rating as rat on m.id = rat.id_movie " + 
+					"WHERE rat.id_user = ? and rat.rating >= ?";
 
 			PreparedStatement ps = conn.prepareStatement(query);
 

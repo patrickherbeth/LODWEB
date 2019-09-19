@@ -24,10 +24,10 @@ public class TagsQuery {
 			
 			int[] idsMovies = movies.stream().mapToInt(a -> a.getId()).toArray();
 			
-			String query = "SELECT tg.iddocument, t.id, t.tag FROM tag t " + 
-					"JOIN tagging tg on t.id = tg.idtag " + 
-					"WHERE tg.iddocument in (" + Arrays.toString(idsMovies).replaceAll("\\[|\\]", "") + ") " + 
-					"GROUP BY tg.iddocument, t.id";
+			String query = "SELECT tm.id_movie, t.id, t.name FROM tag t " + 
+					"JOIN tag_movie tm on t.id = tm.id_tag " + 
+					"WHERE tm.id_movie in (" + Arrays.toString(idsMovies).replaceAll("\\[|\\]", "") + ") " + 
+					"GROUP BY tm.id_movie, t.id";
 			
 			ResultSet rs = ps.executeQuery(query);
 
@@ -52,7 +52,7 @@ public class TagsQuery {
 		try {
 			Statement ps = conn.createStatement();
 			
-			String query = "SELECT t.id, t.tag FROM tag t ORDER BY t.id"; 
+			String query = "SELECT t.id, t.name FROM movielens.tag t WHERE t.id >= 197 ORDER BY t.id"; 
 			
 			ResultSet rs = ps.executeQuery(query);
 

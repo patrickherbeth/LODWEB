@@ -1,19 +1,20 @@
 package cenario;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import database.CategoriesQuery;
+import database.CategoriesTagQuery;
 import database.DBFunctions;
 import database.TagsQuery;
 import model.Document;
 import model.Ratings;
 import model.Tag;
 import movietagging.Category;
-import movietagging.UserMovie;
+import movietagging.CategoryTag;
 import node.SparqlWalk;
-import tagging.PreProcessingText;
 import tagging.RecommenderContext;
 import tagging.TaggingFactory;
 import util.StringUtilsNode;
@@ -22,37 +23,44 @@ public class CreateCenario {
 
 	public static void main(String[] args) {
 
-		/*TagsQuery tagsQuery = new TagsQuery();
+		TagsQuery tagsQuery = new TagsQuery();
 		CategoriesQuery categoriesQuery = new CategoriesQuery();
 
 		ArrayList<Tag> tags = tagsQuery.getAll();
 
+		Set<String> newCategories = new HashSet<>();
+		
 		for (Tag tag : tags) {
-			for (String testTag : SparqlWalk.getLiteralByUri("http://dbpedia.org/resource/"
-					+ StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag.getName()))) {
+			List<String> categoriesString = SparqlWalk.getLiteralByUri("http://dbpedia.org/resource/"
+					+ StringUtilsNode.configureNameTagWithOutCharacterWithUnderLine(tag.getName()));
 
-				Category category = categoriesQuery.getByName(testTag);
-
-				if (category == null) {
-					categoriesQuery.addNewCategory(testTag);
-				}
-				else if(!categoriesQuery.getByTagAndCategory(tag.getId(), category.getId())){
-					categoriesQuery.addNewCategoryTag(tag.getId(), category.getId());
-				}
+			for (String testTag : categoriesString) {
+				newCategories.add(testTag);
 			}
 			
-			System.out.println(tag.getId() + ", ");
-		}*/
+			System.out.println(tag.getId());
+		}
+		
+		String newCategoriesValues = "";
+		
+		for(String category : newCategories) {
+			newCategoriesValues += "(\"" + category + "\"),";
+		}
+		
+		String newStr = newCategoriesValues.substring(0, newCategoriesValues.length() - 1) + ";";
 
+		categoriesQuery.addNewCategories(newStr);
+		
+		
+		
+		//fim
 		ArrayList<Integer> listUsers2 = new ArrayList<>();
 		listUsers2.add(11);
 		// listUsers2.add(96);
 
 		for (int idUser : listUsers2) {
-			List<Document> userMovie = new RecommenderContext(idUser).getCandidateDocimentsByF1();
-			List<Document> movies4 = userMovie.stream().filter(a -> a.getSimilarityJaccard() >= 0.4).collect(Collectors.toList());
-			List<Document> moviesP4 = userMovie.stream().filter(a -> a.getTotalCategoriesEqualsUserModel() >=  0.4).collect(Collectors.toList());
-			
+			List<Document> userMovie = new RecommenderContext(idUser).getCandidateDocumentsByF1();
+
 			System.out.println();
 		}
 
