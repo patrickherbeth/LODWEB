@@ -36,6 +36,7 @@ import model.Ratings;
 import model.SemanticRanking;
 import model.Tag;
 import model.User;
+import movietagging.Rating;
 import node.Classifier;
 import node.Evaluation;
 import node.IConstants;
@@ -49,6 +50,8 @@ import parser.Parser;
 import tagging.CBRecommender;
 import tagging.TaggingFactory;
 import util.StringUtilsNode;
+import model.Document;
+
 
 /**
  *
@@ -1093,7 +1096,7 @@ public class DBFunctions {
 	 */
 	public void deleteSimilarityByUserId(int userId) {
 		Connection conn = DBConnection.getConnection();
-		String query = "DELETE FROM `lod`.`semantic` WHERE `lod`.`semantic`.`uri1` != 'JUST TO PASS THE MYSQL SAFE MODE' `lod`.`semantic`.`uri2` != 'JUST TO PASS THE MYSQL SAFE MODE'  and  `lod`.`semantic`.`userid` = "
+		String query = "DELETE FROM `movielens`.`semantic` WHERE `lod`.`semantic`.`uri1` != 'JUST TO PASS THE MYSQL SAFE MODE' `lod`.`semantic`.`uri2` != 'JUST TO PASS THE MYSQL SAFE MODE'  and  `lod`.`semantic`.`userid` = "
 				+ userId;
 		// NodeUtil.print(query);
 		executeAndClose(conn, query);
@@ -1101,8 +1104,8 @@ public class DBFunctions {
 
 	public void deleteSimilarityByUserIdAndMethod(int userId, String sim) {
 		Connection conn = DBConnection.getConnection();
-		String query = "DELETE FROM `lod`.`semantic` WHERE `lod`.`semantic`.`uri1` != 'JUST TO PASS THE MYSQL SAFE MODE' and `lod`.`semantic`.`uri2` != 'JUST TO PASS THE MYSQL SAFE MODE' and  `lod`.`semantic`.`sim` = \""
-				+ sim + "\"  and  `lod`.`semantic`.`userid` = " + userId;
+		String query = "DELETE FROM `movielens`.`semantic` WHERE `lod`.`semantic`.`uri1` != 'JUST TO PASS THE MYSQL SAFE MODE' and `lod`.`semantic`.`uri2` != 'JUST TO PASS THE MYSQL SAFE MODE' and  `lod`.`semantic`.`sim` = \""
+				+ sim + "\"  and  `movielens`.`semantic`.`userid` = " + userId;
 		// NodeUtil.print(query);
 		executeAndClose(conn, query);
 	}
@@ -1722,7 +1725,7 @@ public class DBFunctions {
 
 		try {
 			try {
-				String query = "INSERT INTO `lod`.`semantic_raking` (`uri1`, `uri2`, `sim`, `score`, `sumsemantic`, `userid`) VALUES (?,?,?,?,?,?)";
+				String query = "INSERT INTO `movielens`.`semantic_raking` (`uri1`, `uri2`, `sim`, `score`, `sumsemantic`, `userid`) VALUES (?,?,?,?,?,?)";
 				ps = conn.prepareStatement(query);
 				ps.setInt(1, idTag1);
 				ps.setInt(2, idTag2);
@@ -1801,13 +1804,12 @@ public class DBFunctions {
 	/*
 	 * Salva o Resultado dos calculos feito do usuário
 	 */
-	public void saveResult(int idUser, String userModelList, List<Integer> testSetList, double p3, double p5,
-			double p10, double precision, double map, String type, double ap3, double ap5, double ap10) {
+	public void saveResult(int idUser, String userModelList, List<Document> testSetList, double p10, double p20,
+			double p30, double precision, double map, String type, double ap10, double ap20, double ap30) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
-		// String userModel = TaggingFactory.listNameFilmString(userModelList);
-		String testSet = TaggingFactory.listNameFilmString(testSetList);
+				String testSet = TaggingFactory.listNameFilmString(testSetList);
 
 		try {
 
@@ -1818,20 +1820,20 @@ public class DBFunctions {
 				e1.printStackTrace();
 			}
 			try {
-				String query = "INSERT INTO `lod`.`result` (`iduser`, `usermodel`, `testset`, `p3`, `p5`, `p10`, `precision`, `map`, `type`, `ap3`, `ap5`, `ap10`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)";
+				String query = "INSERT INTO `movielens`.`result` (`iduser`, `usermodel`, `testset`, `p10`, `p20`, `p30`, `precision`, `map`, `type`, `ap10`, `ap20`, `ap30`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)";
 				ps = conn.prepareStatement(query);
 				ps.setInt(1, idUser);
 				ps.setString(2, userModelList);
 				ps.setString(3, testSet);
-				ps.setDouble(4, p3);
-				ps.setDouble(5, p5);
-				ps.setDouble(6, p10);
+				ps.setDouble(4, p10);
+				ps.setDouble(5, p20);
+				ps.setDouble(6, p30);
 				ps.setDouble(7, precision);
 				ps.setDouble(8, map);
 				ps.setString(9, type);
-				ps.setDouble(10, ap3);
-				ps.setDouble(11, ap5);
-				ps.setDouble(12, ap10);
+				ps.setDouble(10, ap10);
+				ps.setDouble(11, ap20);
+				ps.setDouble(12, ap30);
 				ps.execute();
 				ps.close();
 				conn.close();
@@ -1866,7 +1868,7 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT AVG(" + metric + ") as oi FROM `lod`.`result` WHERE type = ?";
+			String query = "SELECT AVG(" + metric + ") as oi FROM `movielens`.`result` WHERE type = ?";
 			ps = conn.prepareStatement(query);
 			ps.setString(1, metric);
 			ps.setString(1, type1);
@@ -1892,7 +1894,7 @@ public class DBFunctions {
 		try {
 
 			try {
-				String query = "INSERT INTO `lod`.`map_precision` (`algorithm`, `map_3`,  `map_5`, `map_10`,`p_3`,`p_5`,`p_10`) VALUES (?, ?, ?, ? ,? ,? ,?)";
+				String query = "INSERT INTO `movielens`.`map_precision` (`algorithm`, `map_10`,  `map_20`, `map_30`,`p_10`,`p_20`,`p_30`) VALUES (?, ?, ?, ? ,? ,? ,?)";
 				ps = conn.prepareStatement(query);
 				ps.setString(1, type);
 				ps.setDouble(2, map_3);
@@ -2072,8 +2074,8 @@ public class DBFunctions {
 				listforAP.add(rs.getInt(2));
 				cont = cont + 1;
 
-				System.out.println("       " + cont + "           " + rs.getInt(6) + "         " + rs.getInt(2)
-						+ "                " + rs.getString(3) + "    " + rs.getDouble(4));
+				System.out.println("       " + cont + "           " + rs.getInt(6) + "         " + rs.getInt(3)
+						+ "                " + rs.getString(4));/* + "    " + rs.getString(5))*/;
 				System.out.println(" ---------------------------------------------------------------------------");
 
 			}
@@ -2090,7 +2092,7 @@ public class DBFunctions {
 		return listforAP;
 	}
 
-	public static boolean isRelevant(int idUser, int idFilm) {
+	public static boolean filmesRelevants(int idUser, int idFilm) {
 
 		List<Cenario> cenarios = new ArrayList<Cenario>();
 
@@ -2121,6 +2123,36 @@ public class DBFunctions {
 
 		return false;
 	}
+	
+	public static boolean isFilmRelevant(int idUser, int idFilm) {
+
+		List<Rating> ratingsRelevants = new ArrayList<Rating>();
+
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "SELECT avg(rating) FROM rating WHERE id_user = ? AND id_movie = ?";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setInt(1, idUser);
+			ps.setInt(2, idFilm);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs != null && rs.next()) {
+
+				if (rs.getDouble(1) > 4) {
+					Rating rating  = new Rating(idUser, idFilm, rs.getDouble(1), "relevants");
+					ratingsRelevants.add(rating);
+					return true;
+				}
+			}
+			closeQuery(conn, ps);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		
+		return false;
+	}
+
 
 	public static List<Ratings> createTestSetByMax(int iduser, int limit, int max) {
 
@@ -3938,7 +3970,7 @@ public class DBFunctions {
 	 */
 	public int insertIndirectLink(String uri1, String uri2, String uri3, String method) {
 		Connection conn = DBConnection.getConnection();
-		String query = "INSERT INTO `lod`.`indirect_link` (`uri1`,`uri2`,`uri3`,`method`) VALUES (\"" + uri1 + "\" , \""
+		String query = "INSERT INTO `movielens`.`indirect_link` (`uri1`,`uri2`,`uri3`,`method`) VALUES (\"" + uri1 + "\" , \""
 				+ uri2 + "\", \"" + uri3 + "\",\"" + method + "\")";
 		return executeAndClose(conn, query);
 	}
@@ -3953,7 +3985,7 @@ public class DBFunctions {
 			try {
 				for (Resource resource : indirectResources) {
 					ps = conn.prepareStatement(
-							"INSERT INTO `lod`.`indirect_link` (`uri1`,`uri2`,`uri3`,`method`) VALUES (?,?,?,?)  ON DUPLICATE KEY UPDATE `uri1` = `uri1`,`uri2` = `uri2`,`uri3` = `uri3`,`method` = `method`");
+							"INSERT INTO `movielens`.`indirect_link` (`uri1`,`uri2`,`uri3`,`method`) VALUES (?,?,?,?)  ON DUPLICATE KEY UPDATE `uri1` = `uri1`,`uri2` = `uri2`,`uri3` = `uri3`,`method` = `method`");
 					ps.setString(1, uri1);
 					ps.setString(2, resource.getURI());
 					ps.setString(3, uri3);
@@ -3994,7 +4026,7 @@ public class DBFunctions {
 			try {
 				for (Resource resource : directLinks) {
 					ps = conn.prepareStatement(
-							"INSERT INTO `lod`.`indirect_link` (`uri1`,`uri2`,`uri3`,`method`) VALUES (?,?,?,?)  ON DUPLICATE KEY UPDATE `uri1` = `uri1`,`uri2` = `uri2`,`uri3` = `uri3`,`method` = `method`");
+							"INSERT INTO `movielens`.`indirect_link` (`uri1`,`uri2`,`uri3`,`method`) VALUES (?,?,?,?)  ON DUPLICATE KEY UPDATE `uri1` = `uri1`,`uri2` = `uri2`,`uri3` = `uri3`,`method` = `method`");
 					ps.setString(1, uri1);
 					ps.setString(2, resource.getURI());
 					ps.setString(3, uri2);
@@ -4086,7 +4118,7 @@ public class DBFunctions {
 		try {
 			Connection conn = DBConnection.getConnection();
 			StringBuilder query = new StringBuilder(
-					"select distinct uri2 from `lod`.`indirect_link` as b where b.uri1 = ? and b.uri2 = ? and b.uri3 = ? and b.method = ? ");
+					"select distinct uri2 from `movielens`.`indirect_link` as b where b.uri1 = ? and b.uri2 = ? and b.uri3 = ? and b.method = ? ");
 			// System.out.println(query);
 			PreparedStatement ps = conn.prepareStatement(query.toString());
 			ps.setString(1, uri1);
@@ -4120,7 +4152,7 @@ public class DBFunctions {
 		try {
 			Connection conn = DBConnection.getConnection();
 			StringBuilder query = new StringBuilder(
-					"select uri2 from `lod`.`indirect_link` as b where b.uri1 = ? and b.uri3 = ? and b.method = ? ");
+					"select uri2 from `movielens`.`indirect_link` as b where b.uri1 = ? and b.uri3 = ? and b.method = ? ");
 			// System.out.println(query);
 			PreparedStatement ps = conn.prepareStatement(query.toString());
 			ps.setString(1, uri1);
@@ -4144,7 +4176,7 @@ public class DBFunctions {
 		try {
 			Connection conn = DBConnection.getConnection();
 			StringBuilder query = new StringBuilder(
-					"select uri2 from `lod`.`indirect_link` as b where b.uri1 = ? and b.uri3 = ? and b.method = ? ");
+					"select uri2 from `movielens`.`indirect_link` as b where b.uri1 = ? and b.uri3 = ? and b.method = ? ");
 			// System.out.println(query);
 			PreparedStatement ps = conn.prepareStatement(query.toString());
 			ps.setString(1, resource1);
@@ -4168,7 +4200,7 @@ public class DBFunctions {
 		try {
 			Connection conn = DBConnection.getConnection();
 			StringBuilder query = new StringBuilder(
-					"select uri2 from `lod`.`indirect_link` as b where b.uri1 = ? and b.uri2 = ? and b.method = ? ");
+					"select uri2 from `movielens`.`indirect_link` as b where b.uri1 = ? and b.uri2 = ? and b.method = ? ");
 			// System.out.println(query);
 			PreparedStatement ps = conn.prepareStatement(query.toString());
 			ps.setString(1, resource1);
@@ -4896,7 +4928,7 @@ public class DBFunctions {
 	 */
 	public int insertSemanticDistance2(String uri1, String uri2, String sim, Double score) {
 		Connection conn = DBConnection.getConnection();
-		String query = "INSERT INTO `lod`.`semantic` (`uri1`, `uri2`, `sim`, `score`) VALUES ( \"" + uri1 + "\" , \""
+		String query = "INSERT INTO `movielens`.`semantic` (`uri1`, `uri2`, `sim`, `score`) VALUES ( \"" + uri1 + "\" , \""
 				+ uri2 + "\", \"" + sim + "\", " + score + " )";
 		return executeAndClose(conn, query);
 	}
@@ -4907,7 +4939,7 @@ public class DBFunctions {
 		try {
 			try {
 				ps = conn.prepareStatement(
-						"INSERT INTO `lod`.`semantic` (`uri1`, `uri2`, `sim`, `score`,`userid`) VALUES (?,?,?,?,?)  ON DUPLICATE KEY UPDATE `uri1` = `uri1`,`uri2` = `uri2`,`sim` = `sim`");
+						"INSERT INTO `movielens`.`semantic` (`uri1`, `uri2`, `sim`, `score`,`userid`) VALUES (?,?,?,?,?)  ON DUPLICATE KEY UPDATE `uri1` = `uri1`,`uri2` = `uri2`,`sim` = `sim`");
 				ps.setString(1, uri1);
 				ps.setString(2, uri2);
 				ps.setString(3, sim);
@@ -6039,7 +6071,7 @@ public class DBFunctions {
 		try {
 			Connection conn = DBConnection.getConnection();
 			StringBuilder query = new StringBuilder(
-					"SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?)) ");
+					"SELECT distinct b.score from `movielens`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?)) ");
 			PreparedStatement ps = conn.prepareStatement(query.toString());
 			ps.setString(1, uri1);
 			ps.setString(2, uri2);
@@ -6071,9 +6103,9 @@ public class DBFunctions {
 			Connection conn = DBConnection.getConnection();
 			String query = null;
 			if (sim.equals(IConstants.LDSD)) {
-				query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?)) ";
+				query = "SELECT distinct b.score from `movielens`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?)) ";
 			} else if (sim.equals(IConstants.LDSD_LOD)) {
-				query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ? and b.userid = ?)) ";
+				query = "SELECT distinct b.score from `movielens`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ? and b.userid = ?)) ";
 			}
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setString(1, uri1);
@@ -6107,9 +6139,9 @@ public class DBFunctions {
 		try {
 			try {
 				if (sim.equals(IConstants.LDSD_LOD)) {
-					query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?)) ";
+					query = "SELECT distinct b.score from `movielens`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ?)) ";
 				} else if (sim.equals(IConstants.LDSD_JACCARD)) {
-					query = "SELECT distinct b.score from `lod`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ? and b.userid = ?)) ";
+					query = "SELECT distinct b.score from `movielens`.`semantic` as b where ((b.uri1 =  ? and b.uri2 = ? and b.sim = ?) OR (b.uri1 =  ? and b.uri2 = ?  and b.sim = ? and b.userid = ?)) ";
 				}
 				ps = conn.prepareStatement(query);
 				ps.setString(1, uri1);
@@ -8050,6 +8082,7 @@ public class DBFunctions {
 			e.printStackTrace();
 		}
 	}
+
 
 	/**
 	 * @throws Exception

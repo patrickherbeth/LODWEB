@@ -90,6 +90,20 @@ public class CategoriesQuery {
 		} catch (Exception ex) {
 		}
 	}
+	
+	public void addRecommenderContextF1(double idUser, double idMovie, double jaccard, double polysemy) {
+		
+String values = "(" + idUser + ", " + idMovie + ", " + jaccard + ", " + polysemy + ")";
+		
+		try {
+			Statement ps = conn.createStatement();
+
+			String query = "INSERT INTO movielens.recommendation_f1 (id_user, id_movie, rating, jaccard, polissemy) VALUES " + values;
+
+			ps.executeUpdate(query);
+		} catch (Exception ex) {
+		}
+	}
 
 	public void addNewCategoryTag(String values) {
 		try {

@@ -18,7 +18,10 @@ public class RecommenderContext {
 		return this.movies;
 	}
 
-	public double getFormula1(double jaccard, double polysemy, int categoriesUserModel) {
-		return (jaccard + (polysemy / categoriesUserModel)) / 2;
+	public double getFormula1(double jaccard, double polysemy) {
+		
+		System.out.println("Valor Formula 1 -> " + (jaccard + polysemy) / 2);
+		
+		return (jaccard + polysemy) / 2;
 	}
 }

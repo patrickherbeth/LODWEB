@@ -20,7 +20,7 @@ public class UserMovie {
 		return this;
 	}
 
-	public List<Document> getMoviesUnViewed() {
+	public List<Document> getRecommendedMovies() {
 		return userMoviesUnViewed;
 	}
 

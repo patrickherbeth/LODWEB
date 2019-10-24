@@ -4,11 +4,13 @@ public class Rating {
 	private int iduser;
 	private int iddocument;
 	private int rating;
+	private String relevants;
 	
-	public Rating( int iduser, int iddocument, int rating) {
+	public Rating( int iduser, int iddocument, int rating, String relevants) {
 		this.iduser = iduser;
 		this.iddocument = iddocument;
 		this.rating = rating;
+		this.relevants = relevants;
 	}
 
 	public int getIduser() {
@@ -33,6 +35,14 @@ public class Rating {
 
 	public void setRating(int rating) {
 		this.rating = rating;
+	}
+	
+	public String getRelevants() {
+		return relevants;
+	}
+
+	public void setRelevants(String relevants) {
+		this.relevants = relevants;
 	}
 
 	@Override

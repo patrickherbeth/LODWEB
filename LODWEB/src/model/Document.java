@@ -25,9 +25,16 @@ public class Document {
 		this.tags = new HashSet<>();
 	}
 	
+	public Document(int id,int rating) {
+		this.id = id;
+		this.rating = rating;
+		this.tags = new HashSet<>();
+	}
+	
 	public Document(int id, String name) {
 		this.id = id;
 		this.name = name;
+		this.rating = rating;
 		this.tags = new HashSet<>();
 	}
 

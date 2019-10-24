@@ -14,7 +14,9 @@ import model.Ratings;
 import model.Tag;
 import movietagging.Category;
 import movietagging.CategoryTag;
+import movietagging.Evaluation;
 import node.SparqlWalk;
+import tagging.PreProcessingText;
 import tagging.RecommenderContext;
 import tagging.TaggingFactory;
 import util.StringUtilsNode;
@@ -23,12 +25,16 @@ public class CreateCenario {
 
 	public static void main(String[] args) {
 
+		
+		/*
+		
 		TagsQuery tagsQuery = new TagsQuery();
 		CategoriesQuery categoriesQuery = new CategoriesQuery();
 
 		ArrayList<Tag> tags = tagsQuery.getAll();
 
 		Set<String> newCategories = new HashSet<>();
+		
 		
 		for (Tag tag : tags) {
 			List<String> categoriesString = SparqlWalk.getLiteralByUri("http://dbpedia.org/resource/"
@@ -41,6 +47,7 @@ public class CreateCenario {
 			System.out.println(tag.getId());
 		}
 		
+		
 		String newCategoriesValues = "";
 		
 		for(String category : newCategories) {
@@ -51,18 +58,80 @@ public class CreateCenario {
 
 		categoriesQuery.addNewCategories(newStr);
 		
-		
-		
+*/				
 		//fim
+		
+		
 		ArrayList<Integer> listUsers2 = new ArrayList<>();
+		
 		listUsers2.add(11);
-		// listUsers2.add(96);
-
+		//listUsers2.add(96);
+		int count = 0;
 		for (int idUser : listUsers2) {
 			List<Document> userMovie = new RecommenderContext(idUser).getCandidateDocumentsByF1();
-
-			System.out.println();
+			
+			PreProcessingText preProcessingText = new PreProcessingText(idUser).startF1();
+			List<Document> relevantsMovie = new ArrayList<Document>();
+			List<Document> relevantsMovie2 = new ArrayList<Document>();
+			
+			
+			for (Document movie : preProcessingText.getUserMovie().getRecommendedMovies()) {
+				double rating = Double.parseDouble(movie.getName());
+				
+				if(rating > 4) {
+					relevantsMovie.add(movie);
+				}
+			}
+			
+			
+			System.out.println("Valor Quantidade de filmes recomendados -> " + preProcessingText.getUserMovie().getRecommendedMovies().size());
+			System.out.println("Valor Quantidade de relevantes -> " + relevantsMovie.size());
+			System.out.println("Valor Quantidade de userMovie -> " + userMovie.size());
+						
+			double p3_f1 = (double) relevantsMovie.size() / (double) userMovie.size();
+			
+			System.out.println("Precision P@3 -> " + p3_f1);
+			
+			
+			PreProcessingText preProcessingText2 = new PreProcessingText(idUser).startF2();
+		
+			
+			for (Document movie2 : preProcessingText2.getUserMovie().getRecommendedMovies()) {
+				double rating = Double.parseDouble(movie2.getName());
+				
+				if(rating > 4) {
+					relevantsMovie2.add(movie2);
+				}
+			}
+			
+			preProcessingText2.getWUP();
+			
+						
+			System.out.println("Valor Quantidade de filmes recomendados -> " + preProcessingText2.getUserMovie().getRecommendedMovies().size());
+			System.out.println("Valor Quantidade de relevantes -> " + relevantsMovie2.size());
+			System.out.println("Valor Quantidade de userMovie -> " + userMovie.size());
+			
+			double p3_f2 = (double) relevantsMovie.size() / (double) userMovie.size();
+			
+			System.out.println("Precision P@3 -> " + p3_f2);
+			
+			//preProcessingText2.getLDSD();
+			//preProcessingText2.getWUP();
+			
+			TaggingFactory.createRecomedationSystem(userMovie, preProcessingText2.getUserMovie().getRecommendedMovies(), idUser);
+			
+			
 		}
+		
+	
+		
+		
+		
+		
+		
+		/*
+		
+		
 
 		DBFunctions dbFunctions = new DBFunctions();
 
@@ -120,6 +189,7 @@ public class CreateCenario {
 				dbFunctions.insertOrUpdateCenario(listUsers[i], textouserModel, textoTestModel, testSetList.get(j));
 			}
 		}
+	*/
 	}
 
 }

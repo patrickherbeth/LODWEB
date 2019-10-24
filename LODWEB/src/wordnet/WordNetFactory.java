@@ -2,6 +2,7 @@ package wordnet;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import database.DBFunctions;
 import edu.cmu.lti.lexical_db.ILexicalDatabase;
@@ -48,7 +49,7 @@ public class WordNetFactory {
 	}
 
 	public static double[] calculeWUP(List<Tag> userModel, List<Tag> testeSet) {
-		DBFunctions dbFunctions = new DBFunctions();
+
 		Map<String, Double> mapResultLDSDweighted = new TreeMap<String, Double>();
 		double distance;
 
@@ -93,9 +94,5 @@ public class WordNetFactory {
 		
 	}
 
-	
-	
-	
-	
 	
 }
