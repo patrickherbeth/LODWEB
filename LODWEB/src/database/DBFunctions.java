@@ -1804,12 +1804,12 @@ public class DBFunctions {
 	/*
 	 * Salva o Resultado dos calculos feito do usuário
 	 */
-	public void saveResult(int idUser, String userModelList, List<Document> testSetList, double p10, double p20,
+	public void saveResult(int idUser, String userModelList, List<Integer> testSetList, double p10, double p20,
 			double p30, double precision, double map, String type, double ap10, double ap20, double ap30) {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
-				String testSet = TaggingFactory.listNameFilmString(testSetList);
+				String testSet = testSetList.toString();
 
 		try {
 
@@ -2351,7 +2351,7 @@ public class DBFunctions {
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT * from `lod`.`document` where `id`= ? ";
+			String query = "SELECT * from `movielens`.`movie` where `id`= ? ";
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setInt(1, idDocument);
 			ResultSet rs = ps.executeQuery();
@@ -8083,6 +8083,49 @@ public class DBFunctions {
 		}
 	}
 
+	
+	/*
+	 * Exibe o resultado da RecomendaÃ§Ã£o e retorna uma lista com os filmes com
+	 * similaridade
+	 */
+	public List<Integer> resultRecommendation(int userid, String type) {
+		List<Integer> rankedItems = new ArrayList<Integer>();
+
+		try {
+			Connection conn = DBConnection.getConnection();
+			String query = "SELECT DISTINCT * FROM semantic_raking WHERE userid = ? AND sim = ? AND score != 0 AND score < 1 ORDER BY score DESC ";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setInt(1, userid);
+			ps.setString(2, type);
+			ResultSet rs = ps.executeQuery();
+			int cont = 1;
+
+			System.out.println(" \n ---------- RAKING DOS FILME UTILIZANDO UTILIZANDO " + type + "--------------- \n");
+			System.out.println(" CLASSIFICAÃ‡ÃƒO |  USUARIO |  FILME RECOMENDADO |  TIPO  | SIMILARIDADE ");
+			while (rs != null && rs.next()) {
+
+				System.out.println(
+						"       " + cont + "           " + rs.getInt(6) + "         " + findNameOfFilm(rs.getInt(2))
+								/*+ "                " + rs.getString(3) + "    " + rs.getDouble(4)*/);
+				System.out.println(" ---------------------------------------------------------------------------");
+
+				rankedItems.add(rs.getInt(2));
+
+				cont = cont + 1;
+			}
+
+			CBRecommender.end = System.currentTimeMillis();
+
+			System.out.println("   Tempo Total do Calculo:    " + String.valueOf(CBRecommender.end - CBRecommender.init));
+
+			closeQuery(conn, ps);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return rankedItems;
+	}
+
+	
 
 	/**
 	 * @throws Exception

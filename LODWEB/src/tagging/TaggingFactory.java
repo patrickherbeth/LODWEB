@@ -106,11 +106,11 @@ public class TaggingFactory {
 		return text;
 	}
 	
-	public static String listNameFilmString(List<Document> filmes) {
+	public static String listNameFilmString(List<Integer> filmes) {
 		String text = "";
 		
-		for(Document filme : filmes) {
-			text = text + DBFunctions.findNameOfFilm(filme.getId()) + ",";
+		for(Integer filme : filmes) {
+			text = text + DBFunctions.findNameOfFilm(filme) + ",";
 		}
 		
 		return text;
@@ -273,12 +273,12 @@ public class TaggingFactory {
 
 		DBFunctions dbFunctions = new DBFunctions();
 		Lodica.userId = userId;
-		List<Document> filmsrelevants = new ArrayList<Document>();
+		List<Integer> filmsrelevants = new ArrayList<Integer>();
 		
 		
 		for (Document document : testSet) {
 			if(document.getRating() > 4) {
-				filmsrelevants.add(document);
+				filmsrelevants.add(document.getId());
 			}
 		}
 		
@@ -290,18 +290,25 @@ public class TaggingFactory {
 			/*
 			 * Cria lista para calcular AP 
 			 */
-			List<Integer> jSPolissemiaRankedList = dbFunctions.listByAp(userId, "WUP");
+				/* 
+				 * Exibe e retorna a lista com as simiaridades encontrada
+				 */
+			
+			  	 List<Integer> WUPRankedList = dbFunctions.resultRecommendation(userId, "WUP");
 		   
 
 			 /*
 			 * Calcula a Precisição, AP e MAP
 			 */
 			
-			calculeResultPrecisionAndMAP(userModel, testSet, filmsrelevants, userId, "WUP");
+			calculeResultPrecisionAndMAP(userModel, WUPRankedList, filmsrelevants, userId, "WUP");
 		
 			}
 			
 			break;
+			
+		
+			
 		}
 
 		TaggingFactory.saveCalculeMAP();
@@ -376,7 +383,7 @@ public class TaggingFactory {
 	/*
 	 * Calcula o resultado da Precision and MAP e salva o Resultado
 	 */
-	public static void calculeResultPrecisionAndMAP(List<Document> set, List<Document> testSet, List<Document> relevants, int userId, String type) {
+	public static void calculeResultPrecisionAndMAP(List<Document> set, List<Integer> testSet, List<Integer> relevants, int userId, String type) {
 		DBFunctions dbFunctions = new DBFunctions();
 		List<Integer> listaAP10 = new ArrayList<Integer>();
 		List<Integer> listaAP20 = new ArrayList<Integer>();
@@ -399,9 +406,7 @@ public class TaggingFactory {
 			listIntegerUserModel.add(movie.getId());
 		}
 		
-		for (Document unmovie : relevants) {
-			listIntegerTestSet.add(unmovie.getId());
-		}
+		
 		
 		double precsion = PrecisionAndRecall.precisionAt(listIntegerTestSet, listIntegerrelevants, testSet.size());
 		System.out.println("VALOR DO PRECISION " + type + " : " + precsion + "\n");
@@ -409,7 +414,7 @@ public class TaggingFactory {
 		double cont3 = 0, cont5 = 0, cont10 = 0;
 		
 		for (int i = 0; i < testSet.size(); i++) {
-			if (DBFunctions.isFilmRelevant(userId, testSet.get(i).getId())) {
+			if (DBFunctions.isFilmRelevant(userId, testSet.get(i))) {
 				if (i < 10) {
 					cont3++;
 				}
@@ -428,15 +433,13 @@ public class TaggingFactory {
 		
 		List<Integer> listNumber = new ArrayList<Integer>();
 		
-		for (Document movie : testSet) {
-			listNumber.add(movie.getId());
-		}
 		
 		
 		
-		listaAP10 = getFirstNelementsList(listNumber, 10);
-		listaAP20 = getFirstNelementsList(listNumber,20);
-		listaAP30 = getFirstNelementsList(listNumber, 30);
+		
+		listaAP10 = getFirstNelementsList(testSet, 10);
+		listaAP20 = getFirstNelementsList(testSet,20);
+		listaAP30 = getFirstNelementsList(testSet, 30);
 		
 		
 		

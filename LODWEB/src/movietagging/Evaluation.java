@@ -74,8 +74,13 @@ public class Evaluation {
 		List<Integer> listaAP10 = new ArrayList<Integer>();
 		double p10, p20, p30, AP3, AP5, AP10, media, map;
 
+		
+		
+		
+		
+		
 		if (rankedList == null || rankedList.size() == 0) {
-			dbFunctions.saveResult(userId, userModel, relevants, 0, 0, 0, 0, 0, type, 0, 0, 0);
+			dbFunctions.saveResult(userId, userModel.toString(), relevants, 0, 0, 0, 0, 0, type, 0, 0, 0);
 			return;
 		}
 
@@ -85,7 +90,7 @@ public class Evaluation {
 
 		double cont3 = 0, cont5 = 0, cont10 = 0;
 		for (int i = 0; i < rankedList.size(); i++) {
-			if (DBFunctions.isRelevant(userId, rankedList.get(i))) {
+			if (DBFunctions.isFilmRelevant(userId, rankedList.get(i))) {
 				if (i < 3) {
 					cont3++;
 				}
