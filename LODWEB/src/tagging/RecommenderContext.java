@@ -17,7 +17,7 @@ public class RecommenderContext {
 	public List<Document> getCandidateDocumentsByF1() {
 		return this.movies;
 	}
-
+	
 	public double getFormula1(double jaccard, double polysemy) {
 		
 		System.out.println("Valor Formula 1 -> " + (jaccard + polysemy) / 2);

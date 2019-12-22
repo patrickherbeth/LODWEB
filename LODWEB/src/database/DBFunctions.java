@@ -26,6 +26,7 @@ import org.apache.jena.base.Sys;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 import com.drew.metadata.photoshop.PsdHeaderDescriptor;
+import com.mchange.v2.cfg.PropertiesConfigSource.Parse;
 import com.sun.xml.bind.v2.runtime.reflect.opt.TransducedAccessor_field_Double;
 
 import cosinesimilarity.LuceneCosineSimilarity;
@@ -1809,7 +1810,12 @@ public class DBFunctions {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = null;
 
-				String testSet = testSetList.toString();
+				String testSet = "";
+				for (Integer integer : testSetList) {
+					testSet = Integer.toString(integer);
+					testSet = testSet + ", ";
+				}
+	
 
 		try {
 
@@ -2124,16 +2130,16 @@ public class DBFunctions {
 		return false;
 	}
 	
-	public static boolean isFilmRelevant(int idUser, int idFilm) {
+	public static double isFilmRelevant(int idUser, int idFilm) {
 
 		List<Rating> ratingsRelevants = new ArrayList<Rating>();
 
 		try {
 			Connection conn = DBConnection.getConnection();
-			String query = "SELECT avg(rating) FROM rating WHERE id_user = ? AND id_movie = ?";
+			String query = "SELECT avg(rating) FROM rating WHERE id_movie = ?";
 			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setInt(1, idUser);
-			ps.setInt(2, idFilm);
+			//ps.setInt(1, idUser);
+			ps.setInt(1, idFilm);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs != null && rs.next()) {
@@ -2141,7 +2147,7 @@ public class DBFunctions {
 				if (rs.getDouble(1) > 4) {
 					Rating rating  = new Rating(idUser, idFilm, rs.getDouble(1), "relevants");
 					ratingsRelevants.add(rating);
-					return true;
+					return rs.getDouble(1);
 				}
 			}
 			closeQuery(conn, ps);
@@ -2150,7 +2156,7 @@ public class DBFunctions {
 		}
 
 		
-		return false;
+		return 0;
 	}
 
 
@@ -8088,8 +8094,8 @@ public class DBFunctions {
 	 * Exibe o resultado da RecomendaÃ§Ã£o e retorna uma lista com os filmes com
 	 * similaridade
 	 */
-	public List<Integer> resultRecommendation(int userid, String type) {
-		List<Integer> rankedItems = new ArrayList<Integer>();
+	public List<Document> resultRecommendation(int userid, String type) {
+		List<Document> rankedItems = new ArrayList<Document>();
 
 		try {
 			Connection conn = DBConnection.getConnection();
@@ -8105,11 +8111,13 @@ public class DBFunctions {
 			while (rs != null && rs.next()) {
 
 				System.out.println(
-						"       " + cont + "           " + rs.getInt(6) + "         " + findNameOfFilm(rs.getInt(2))
+						"       " + cont + "           " + rs.getInt(6) + "         " + findNameOfFilm(rs.getInt(3))
 								/*+ "                " + rs.getString(3) + "    " + rs.getDouble(4)*/);
 				System.out.println(" ---------------------------------------------------------------------------");
 
-				rankedItems.add(rs.getInt(2));
+				Document document = new Document(rs.getInt(3), findNameOfFilm(rs.getInt(3)));
+				
+				rankedItems.add(document);
 
 				cont = cont + 1;
 			}

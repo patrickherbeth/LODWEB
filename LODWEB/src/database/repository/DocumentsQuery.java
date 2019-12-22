@@ -52,7 +52,7 @@ public class DocumentsQuery {
 			String query = "SELECT rat.id_movie, avg(rat.rating) as rating from movielens.rating as rat " + 
 					"where rat.id_movie in (SELECT tag.id_movie FROM movielens.tag_movie as tag where id_tag not in (" + Arrays.toString(idsMoviesViewed).replaceAll("\\[|\\]", "") + ")) " + 
 					"group by rat.id_movie, rating " + 
-					"order by rating desc LIMIT 100";
+					"order by rating desc LIMIT 50";
 			
 			
 			/*
@@ -69,7 +69,7 @@ public class DocumentsQuery {
 			ResultSet rs = st.executeQuery(query);
 
 			while (rs.next()) {
-				movies.add(new Document(rs.getInt(1), rs.getString(2)));
+				movies.add(new Document(rs.getInt(1), rs.getInt(2)));
 			}
 
 			return movies;

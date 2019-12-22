@@ -1,14 +1,11 @@
 package tagging;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.apache.jena.base.Sys;
 
 import database.CategoriesQuery;
 import database.DBFunctions;
@@ -41,7 +38,7 @@ public class PreProcessingText {
 
 	// UserModel and TestSet
 	private Set<Tag> userModel;
-	private final int LIMIT_OF_TAGS = 10;
+	private final int LIMIT_OF_TAGS = 5;
 
 	public PreProcessingText(int idCurrentUser) {
 		this.idCurrentUser = idCurrentUser;
@@ -51,17 +48,6 @@ public class PreProcessingText {
 		this.moviesViewed = new ArrayList<>();
 		this.moviesUnViewed = new ArrayList<>();
 		this.userModel = new HashSet<>();
-	}
-
-	public PreProcessingText startF2() {
-		selectCandidateMovies();
-		createUserModel(LIMIT_OF_TAGS);
-		createTestSet();
-		treatmentPolysemy();
-		calculationJaccard();
-		//getFormula2();
-
-		return this;
 	}
 
 	public PreProcessingText startF1() {
@@ -77,7 +63,18 @@ public class PreProcessingText {
 		createTestSet();
 		treatmentPolysemy();
 		calculationJaccard();
-		//getFormula1();
+		
+
+		return this;
+	}
+	
+	public PreProcessingText startF2() {
+		selectCandidateMovies();
+		createUserModel(LIMIT_OF_TAGS);
+		createTestSet();
+		treatmentPolysemy();
+		calculationJaccard();
+		
 
 		return this;
 	}
@@ -89,11 +86,6 @@ public class PreProcessingText {
 
 		this.moviesViewed = this.documentsQuery.getDocummentsViewedByUser(this.idCurrentUser, 4);
 
-		System.out.println("selectCandidateMovies() value relevant ->  " + this.moviesViewed.size());
-
-		List<Document> arraylist = new ArrayList<Document>();
-		arraylist = this.moviesViewed;
-
 		this.tagsQuery.getTagsByMovies(this.moviesViewed);
 
 		Set<Tag> tagsMoviesViewed = new HashSet<>();
@@ -102,8 +94,7 @@ public class PreProcessingText {
 			tagsMoviesViewed.addAll(document.getTags());
 		}
 
-		this.moviesUnViewed = this.documentsQuery
-				.getDocummentsUnViewedByUser(tagsMoviesViewed.stream().mapToInt(a -> a.getId()).toArray());
+		this.moviesUnViewed = this.documentsQuery.getDocummentsUnViewedByUser(tagsMoviesViewed.stream().mapToInt(a -> a.getId()).toArray());
 		this.tagsQuery.getTagsByMovies(this.moviesUnViewed);
 
 		this.moviesViewed = new ArrayList<>(this.moviesViewed.stream().filter(a -> a.getTags().size() >= 10).collect(Collectors.toList()));
@@ -228,8 +219,6 @@ public class PreProcessingText {
 			System.out.println("Titulo -> " + movie.getName());
 			System.out.println("Calculo Jaccard -> " + calculationJaccard(this.userModel, tagsByUserModel));
 			
-			double jaccard = calculationJaccard(this.userModel, tagsByUserModel);
-			
 			System.out.println("Valor Formula 1 -> " + (movie.getSimilarityJaccard() + movie.getTotalCategoriesEqualsUserModel()) / 2);
 			
 			System.out.println("----------------------------------------------");
@@ -269,37 +258,40 @@ public class PreProcessingText {
 	 */
 	
 	public void getFormula1() {
+		DBFunctions dbfunctions = new DBFunctions();
+		List<SemanticRanking> listSemanticRakingFormula1 = new ArrayList<SemanticRanking>();
 
 		for (Document movie : this.moviesUnViewed) {
-			Set<Tag> tagsByUserModel = movie.getTagsWithLimit(LIMIT_OF_TAGS);
-
-			double jaccard = calculationJaccard(this.userModel, tagsByUserModel);
-
 			
-		if(((movie.getSimilarityJaccard() + movie.getTotalCategoriesEqualsUserModel()) / 2) > 0) {
-			System.out.println("--------------------FÓRMULA 1-------------------");
-			System.out.println("Nome ID -> " + movie.getId());
-			System.out.println("Nome Rating -> " + movie.getName());
-			System.out.println("Similaridade Jaccard -> " + movie.getSimilarityJaccard());
-			System.out.println("Valor tratamento Polissemia -> " + movie.getTotalCategoriesEqualsUserModel());
-			System.out.println("Valor Formula 1 -> " + (movie.getSimilarityJaccard() + movie.getTotalCategoriesEqualsUserModel()) / 2);
+			if(((movie.getSimilarityJaccard() + movie.getTotalCategoriesEqualsUserModel()) / 2) > 0) {
+				System.out.println("--------------------FÓRMULA 1-------------------");
+				System.out.println("Nome ID -> " + movie.getId());
+				System.out.println("Nome Rating -> " + movie.getName());
+				System.out.println("Similaridade Jaccard -> " + movie.getSimilarityJaccard());
+				System.out.println("Valor tratamento Polissemia -> " + movie.getTotalCategoriesEqualsUserModel());
+				System.out.println("Valor Formula 1 -> " + (movie.getSimilarityJaccard() + movie.getTotalCategoriesEqualsUserModel()) / 2);
 
-			this.documentsQuery.saveRecommenderForluma1(this.idCurrentUser, movie.getId(),  movie.getRating(), movie.getSimilarityJaccard(), movie.getTotalCategoriesEqualsUserModel());
-			
+				this.documentsQuery.saveRecommenderForluma1(this.idCurrentUser, movie.getId(),  movie.getRating(), movie.getSimilarityJaccard(), movie.getTotalCategoriesEqualsUserModel());
+		
+				SemanticRanking semanticRakingFormula1 = new SemanticRanking(1, movie.getId(), "FORMULA1", movie.getSimilarityJaccard(), movie.getSimilarityJaccard(), this.idCurrentUser);
+				listSemanticRakingFormula1.add(semanticRakingFormula1);
+			}
 		}
-			
-			
+		
+		for (SemanticRanking semantic : listSemanticRakingFormula1) {
 
+			if (semantic.getScore() != 0.0 || semantic.getScore() < 1.0) {
+				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(), semantic.getScore(), semantic.getSumsemantic(), this.idCurrentUser);
+			}
 		}
 	}
 	
 	public void getFormula2() {
-
+		DBFunctions dbfunctions = new DBFunctions();
+		List<SemanticRanking> listSemanticRakingFormula2 = new ArrayList<SemanticRanking>();
+	
 		for (Document movie : this.moviesUnViewed) {
-			Set<Tag> tagsByUserModel = movie.getTagsWithLimit(LIMIT_OF_TAGS);
 
-			double jaccard = calculationJaccard(this.userModel, tagsByUserModel);
-			
 			if(((movie.getSimilarityJaccard() + movie.getTotalCategoriesEqualsUserModel()) / 2) > 0) {
 
 				System.out.println("--------------------FÓRMULA 2-------------------");
@@ -309,8 +301,18 @@ public class PreProcessingText {
 				System.out.println("Valor tratamento Polissemia -> " + movie.getTotalCategoriesEqualsUserModel());
 				System.out.println("Valor Formula 2 -> " + (movie.getSimilarityJaccard() + movie.getTotalCategoriesEqualsUserModel()) / 2);
 				
+				SemanticRanking semanticRakingFormula2 = new SemanticRanking(1, movie.getId(), "FORMULA2", movie.getSimilarityJaccard(), movie.getSimilarityJaccard(), this.idCurrentUser);
+				listSemanticRakingFormula2.add(semanticRakingFormula2);
+				
 				this.documentsQuery.saveRecommenderForluma2(this.idCurrentUser, movie.getId(),  movie.getRating(), movie.getSimilarityJaccard(), movie.getTotalCategoriesEqualsUserModel());
 			
+			}
+		}
+		
+		for (SemanticRanking semantic : listSemanticRakingFormula2) {
+
+			if (semantic.getScore() != 0.0 || semantic.getScore() < 1.0) {
+				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(), semantic.getScore(), semantic.getSumsemantic(), this.idCurrentUser);
 			}
 		}
 	}
@@ -318,9 +320,7 @@ public class PreProcessingText {
 	public void getLDSD() {
 		DBFunctions dbfunctions = new DBFunctions();
 		List<SemanticRanking> listSemanticRakingLDSD = new ArrayList<SemanticRanking>();
-		
-		
-
+	
 		for (Document movie : this.moviesUnViewed) {
 			Set<Tag> tagsByUserModel = movie.getTagsWithLimit(LIMIT_OF_TAGS);
 
@@ -370,18 +370,9 @@ public class PreProcessingText {
 				System.out.println("Nome Filme -> " + movie.getName());
 				System.out.println("Nome Rating -> " + movie.getRating());
 				System.out.println("Valor WUP -> " + calculeWUP[1]);
-				
-				SemanticRanking semanticRakingWup = new SemanticRanking(1, movie.getId(), "WUP", calculeWUP[1], calculeWUP[0], this.idCurrentUser);
-				listSemanticRakingWup.add(semanticRakingWup);
-				
+								
 				this.documentsQuery.saveRecommenderWUP(this.idCurrentUser, movie.getId(), movie.getRating(), calculeWUP[1]);
-			}
-		}
-		
-		for (SemanticRanking semantic : listSemanticRakingWup) {
-
-			if (semantic.getScore() != 0.0 || semantic.getScore() < 1.0) {
-				dbfunctions.insertOrUpdateSemanticRaking(1, semantic.getUri2(), semantic.getType(), semantic.getScore(), semantic.getSumsemantic(), this.idCurrentUser);
+				dbfunctions.insertOrUpdateSemanticRaking(1, movie.getId(), "WUP", calculeWUP[1], calculeWUP[0], this.idCurrentUser);
 			}
 		}
 	}

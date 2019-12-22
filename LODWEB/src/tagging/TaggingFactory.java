@@ -269,49 +269,33 @@ public class TaggingFactory {
 	/*
 	 * Calcula a similaridade e salva no banco de dados e devolve uma recomendações de filmes
 	 */
-	public static void createRecomedationSystem(List<Document> userModel, List<Document> testSet, int userId) {
+	public static void createRecomedationSystem(List<Document> userModel, List<Document> testSet, int userId, String similarity) {
 
 		DBFunctions dbFunctions = new DBFunctions();
 		Lodica.userId = userId;
 		List<Integer> filmsrelevants = new ArrayList<Integer>();
-		
-		
+
 		for (Document document : testSet) {
-			if(document.getRating() > 4) {
+			if (document.getRating() > 4) {
 				filmsrelevants.add(document.getId());
 			}
 		}
-		
+
+		/*
+		 * Cria lista para calcular AP
+		 */
+	
+		List<Document> WUPRankedList = dbFunctions.resultRecommendation(userId, similarity);
 		
 
-		for (Document movie : userModel) {
-			for (Document unmovie : testSet) {
-			
-			/*
-			 * Cria lista para calcular AP 
-			 */
-				/* 
-				 * Exibe e retorna a lista com as simiaridades encontrada
-				 */
-			
-			  	 List<Integer> WUPRankedList = dbFunctions.resultRecommendation(userId, "WUP");
-		   
+		/*
+		 * Calcula a Precisição, AP e MAP
+		 */
 
-			 /*
-			 * Calcula a Precisição, AP e MAP
-			 */
-			
-			calculeResultPrecisionAndMAP(userModel, WUPRankedList, filmsrelevants, userId, "WUP");
+		calculeResultPrecisionAndMAP(userModel, WUPRankedList, filmsrelevants, userId, similarity);
 		
-			}
-			
-			break;
-			
-		
-			
-		}
 
-		TaggingFactory.saveCalculeMAP();
+		TaggingFactory.saveCalculeMAP(similarity);
 	}
 
 	/*
@@ -383,38 +367,58 @@ public class TaggingFactory {
 	/*
 	 * Calcula o resultado da Precision and MAP e salva o Resultado
 	 */
-	public static void calculeResultPrecisionAndMAP(List<Document> set, List<Integer> testSet, List<Integer> relevants, int userId, String type) {
+	public static void calculeResultPrecisionAndMAP(List<Document> userModel, List<Document> rankedList, List<Integer> relevants, int userId, String type) {
 		DBFunctions dbFunctions = new DBFunctions();
 		List<Integer> listaAP10 = new ArrayList<Integer>();
 		List<Integer> listaAP20 = new ArrayList<Integer>();
 		List<Integer> listaAP30 = new ArrayList<Integer>();
-		List<Integer> listIntegerUserModel = new ArrayList<Integer>();
 		List<Integer> listIntegerTestSet = new ArrayList<Integer>();
-		List<Integer> listIntegerrelevants = new ArrayList<Integer>();
 		double p10, p20, p30, AP10, AP20, AP30, media, map;
+		
+		
+		for (Integer movieTestSet : relevants) {
+			listIntegerTestSet.add(movieTestSet);
+		}
+		
 
-		if (testSet == null || testSet.size() == 0) {
-			dbFunctions.saveResult(userId, set.toString(), relevants, 0, 0, 0, 0, 0, type, 0, 0, 0);
+		if (rankedList == null || rankedList.size() == 0) {
+			dbFunctions.saveResult(userId, userModel.toString(), listIntegerTestSet, 0, 0, 0, 0, 0, type, 0, 0, 0);
 			return;
 		}
 
 		System.out.println(" \n -------------- PRECISION " + type + " ---------------- \n");
 		
 		
+		/*
+		* Calcule a precisão @ N de uma lista de itens classificados.
+		* @param rankingItem uma lista de IDs de itens classificados, o item de maior classificação primeiro
+		* @param correctItem uma coleção de IDs de itens positivos / corretos
+		* @param na posição de corte na lista
+		* @ retorne a precisão @ N para os dados fornecidos
+		*/
 		
-		for (Document movie : set) {
-			listIntegerUserModel.add(movie.getId());
-		}
-		
-		
-		
-		double precsion = PrecisionAndRecall.precisionAt(listIntegerTestSet, listIntegerrelevants, testSet.size());
+		double precsion = PrecisionAndRecall.precisionAt(listIntegerTestSet, relevants, listIntegerTestSet.size());
 		System.out.println("VALOR DO PRECISION " + type + " : " + precsion + "\n");
+		
+		double valuePrecission = (double) rankedList.size() / (double) listIntegerTestSet.size();
+		double precissionOf10 = (((double) rankedList.size() / 10) < 1) ? ((double) rankedList.size() / 10) : 1;
+		double precissionOf20 = (((double) rankedList.size() / 20) < 1) ? ((double) rankedList.size() / 20) : 1;
+		double precissionOf30 = (((double) rankedList.size() / 30) < 1) ? ((double) rankedList.size() / 30) : 1;
+		
+		System.out.println("----------------------------------------------------------------------" + type + " : " + valuePrecission + "\n");
+		System.out.println("VALOR DO PRECISION MANUAL" + type + " : " + valuePrecission + "\n");
+		System.out.println("VALOR DO PRECISION 10 -> " + precissionOf10 + "\n");
+		System.out.println("VALOR DO PRECISION 20 ->" + precissionOf20 + "\n");
+		System.out.println("VALOR DO PRECISION 30 ->" + precissionOf30 + "\n");
+		System.out.println("----------------------------------------------------------------------" + type + " : " + valuePrecission + "\n");
 
 		double cont3 = 0, cont5 = 0, cont10 = 0;
 		
-		for (int i = 0; i < testSet.size(); i++) {
-			if (DBFunctions.isFilmRelevant(userId, testSet.get(i))) {
+		for (int i = 0; i < listIntegerTestSet.size(); i++) {
+		
+			double value = DBFunctions.isFilmRelevant(userId, listIntegerTestSet.get(i));
+			
+			if (value > 0) {
 				if (i < 10) {
 					cont3++;
 				}
@@ -430,18 +434,16 @@ public class TaggingFactory {
 		p10 = cont3 / 10;
 		p20 = cont5 / 20;
 		p30 = cont10 / 30;
-		
-		List<Integer> listNumber = new ArrayList<Integer>();
-		
-		
+
+
 		
 		
 		
-		listaAP10 = getFirstNelementsList(testSet, 10);
-		listaAP20 = getFirstNelementsList(testSet,20);
-		listaAP30 = getFirstNelementsList(testSet, 30);
+			
 		
-		
+		listaAP10 = getFirstNelementsList(listIntegerTestSet, 10);
+		listaAP20 = getFirstNelementsList(listIntegerTestSet,20);
+		listaAP30 = getFirstNelementsList(listIntegerTestSet, 30);
 		
 
 		AP10 = PrecisionAndRecall.AP(listaAP10, listIntegerTestSet, null);
@@ -455,31 +457,40 @@ public class TaggingFactory {
 		System.out.println("VALOR DO p@20: " + p20 + "\n");
 		System.out.println("VALOR DO p@30: " + p30 + "\n");
 
-		System.out.println("-------- O VALOR DO MAP (ERRADO E : )" + media);
-		System.out.println("-------- O VALOR DO MAP (CORRETO E : )" + map);
+		System.out.println("-------- O VALOR DO MAP (CORRETO ERRADO : )" + media);
+		System.out.println("-------- O VALOR DO MAP (CORRETO CORRETO : )" + map);
 		System.out.println("-------- SALVO PARA O USUÁRIO " + userId);
 
-		dbFunctions.saveResult(userId, set.toString(), relevants, p10, p20, p30, precsion, map, type, AP10, AP20, AP30);
+		
+		String textUserModel = "";
+
+		for (Document value : userModel) {
+			textUserModel  = textUserModel + value.getId() + ", ";
+		}
+		
+
+		dbFunctions.saveResult(userId, textUserModel, relevants, p10, p20, p30, precsion, map, type, AP10, AP20, AP30);
 	}
 	
 	/*
 	 * Salva o resultado do MAP
 	 */
-	public static void saveCalculeMAP() {
+	public static void saveCalculeMAP(String similarity) {
 		
 		DBFunctions dbfunctions = new DBFunctions();
 
-		String[] listAlgorithm= {"LDSD","WUP","COSINE","JACCARD","LDSD+JACCARD","WUP+JACCARD", "POLISSEMIA", "POLISSEMIA|SUBJECT", "JACCARD|SINONIMOS", "FORMULA1", "FORMULA2"};
 		
-		for (int i = 0; i < listAlgorithm.length; i++) {
-			double map10= dbfunctions.calculeMap("ap10",listAlgorithm[i]);
-			double map20= dbfunctions.calculeMap("ap20",listAlgorithm[i]);
-			double map30= dbfunctions.calculeMap("ap30",listAlgorithm[i]);
-			double p_10= dbfunctions.calculeMap("p10",listAlgorithm[i]);
-			double p_20= dbfunctions.calculeMap("p20",listAlgorithm[i]);
-			double p_30= dbfunctions.calculeMap("p30",listAlgorithm[i]);
+		
+		
+
+			double map10= dbfunctions.calculeMap("ap10", similarity);
+			double map20= dbfunctions.calculeMap("ap20", similarity);
+			double map30= dbfunctions.calculeMap("ap30",similarity);
+			double p_10= dbfunctions.calculeMap("p10",similarity);
+			double p_20= dbfunctions.calculeMap("p20",similarity);
+			double p_30= dbfunctions.calculeMap("p30",similarity);
 			
-			dbfunctions.saveMapPrecison(listAlgorithm[i], map10, map20, map30, p_10, p_20, p_30);
-		}
+			dbfunctions.saveMapPrecison(similarity, map10, map20, map30, p_10, p_20, p_30);
+		
 	}
 }
